@@ -1,6 +1,5 @@
-'use strict';
+import React from 'react';
 
-var React = require('react');
 var ReactCanvas = require('react-canvas');
 
 var Group = ReactCanvas.Group;

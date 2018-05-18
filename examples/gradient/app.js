@@ -1,11 +1,6 @@
-'use strict';
+import React from 'react';
+import {Gradient, Surface} from 'react-canvas';
 
-var React = require('react');
-var ReactDOM = require('react-dom');
-var ReactCanvas = require('react-canvas');
-
-var Gradient = ReactCanvas.Gradient;
-var Surface = ReactCanvas.Surface;
 
 var App = React.createClass({
 
@@ -37,9 +32,10 @@ var App = React.createClass({
   },
 
   getSize: function () {
-    return document.getElementById('main').getBoundingClientRect();
+    return {top: 0, right: 80, bottom: 80, left: 0, width: 80, height: 80}
   }
 
 });
 
-ReactDOM.render(<App />, document.getElementById('main'));
+export default App;
+

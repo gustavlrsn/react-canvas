@@ -1,3 +1,5 @@
+/** @jsx React.DOM */
+
 'use strict';
 
 var React = require('react');
@@ -54,7 +56,8 @@ var App = React.createClass({
       top: 0,
       left: 0,
       width: size.width,
-      height: size.height
+      height: size.height,
+      backgroundColor: "#320000"
     };
   },
 
