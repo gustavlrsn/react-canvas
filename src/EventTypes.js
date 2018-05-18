@@ -1,14 +1,12 @@
-'use strict';
-
 // Supported events that RenderLayer's can subscribe to.
 
-const onTouchStart ='touchstart';
-const onTouchMove ='touchmove';
-const onTouchEnd ='touchend';
-const onTouchCancel ='touchcancel';
-const onClick ='click';
-const onContextMenu ='contextmenu';
-const onDoubleClick ='dblclick';
+const onTouchStart = "touchstart";
+const onTouchMove = "touchmove";
+const onTouchEnd = "touchend";
+const onTouchCancel = "touchcancel";
+const onClick = "click";
+const onContextMenu = "contextmenu";
+const onDoubleClick = "dblclick";
 
 export {
   onTouchStart,
@@ -17,5 +15,5 @@ export {
   onTouchCancel,
   onClick,
   onContextMenu,
-  onDoubleClick,
+  onDoubleClick
 };

@@ -1,32 +1,11 @@
-'use strict';
-
-import ImageCache from './ImageCache';
-import {isFontLoaded} from './FontUtils';
-import FontFace from './FontFace';
-import { drawGradient, drawText, drawImage } from './CanvasUtils';
-import Canvas from './Canvas';
-
-const layerTypesToDrawFunction = {
-  image: drawImageRenderLayer,
-  text: drawTextRenderLayer,
-  gradient: drawGradientRenderLayer
-}
-
-function getDrawFunction(type) {
-  return layerTypesToDrawFunction.hasOwnProperty(type) ?
-    layerTypesToDrawFunction[type] : drawBaseRenderLayer;
-}
-
-function registerLayerType(type, drawFunction) {
-  if (layerTypesToDrawFunction.hasOwnProperty(type)) {
-    throw new Error(`type ${type} already registered`);
-  }
-
-  layerTypesToDrawFunction[type] = drawFunction;
-}
+import ImageCache from "./ImageCache";
+import { isFontLoaded } from "./FontUtils";
+import FontFace from "./FontFace";
+import { drawGradient, drawText, drawImage } from "./CanvasUtils";
+import Canvas from "./Canvas";
 
 // Global backing store <canvas> cache
-var _backingStores = [];
+let _backingStores = [];
 
 /**
  * Maintain a cache of backing <canvas> for RenderLayer's which are accessible
@@ -35,8 +14,8 @@ var _backingStores = [];
  * @param {String} id The unique `backingStoreId` for a RenderLayer
  * @return {HTMLCanvasElement}
  */
-function getBackingStore (id) {
-  for (var i=0, len=_backingStores.length; i < len; i++) {
+function getBackingStore(id) {
+  for (let i = 0, len = _backingStores.length; i < len; i++) {
     if (_backingStores[i].id === id) {
       return _backingStores[i].canvas;
     }
@@ -49,8 +28,8 @@ function getBackingStore (id) {
  *
  * @param {String} id The layer's backingStoreId
  */
-function invalidateBackingStore (id) {
-  for (var i=0, len=_backingStores.length; i < len; i++) {
+function invalidateBackingStore(id) {
+  for (let i = 0, len = _backingStores.length; i < len; i++) {
     if (_backingStores[i].id === id) {
       _backingStores.splice(i, 1);
       break;
@@ -61,23 +40,8 @@ function invalidateBackingStore (id) {
 /**
  * Purge the entire backing store cache.
  */
-function invalidateAllBackingStores () {
+function invalidateAllBackingStores() {
   _backingStores = [];
-}
-
-/**
- * Find the nearest backing store ancestor for a given layer.
- *
- * @param {RenderLayer} layer
- */
-function getBackingStoreAncestor (layer) {
-  while (layer) {
-    if (layer.backingStoreId) {
-      return layer;
-    }
-    layer = layer.parentLayer;
-  }
-  return null;
 }
 
 /**
@@ -87,15 +51,15 @@ function getBackingStoreAncestor (layer) {
  * @param {String} imageUrl
  * @return {Boolean}
  */
-function layerContainsImage (layer, imageUrl) {
+function layerContainsImage(layer, imageUrl) {
   // Check the layer itself.
-  if (layer.type === 'image' && layer.imageUrl === imageUrl) {
+  if (layer.type === "image" && layer.imageUrl === imageUrl) {
     return layer;
   }
 
   // Check the layer's children.
   if (layer.children) {
-    for (var i=0, len=layer.children.length; i < len; i++) {
+    for (let i = 0, len = layer.children.length; i < len; i++) {
       if (layerContainsImage(layer.children[i], imageUrl)) {
         return layer.children[i];
       }
@@ -112,15 +76,19 @@ function layerContainsImage (layer, imageUrl) {
  * @param {FontFace} fontFace
  * @return {Boolean}
  */
-function layerContainsFontFace (layer, fontFace) {
+function layerContainsFontFace(layer, fontFace) {
   // Check the layer itself.
-  if (layer.type === 'text' && layer.fontFace && layer.fontFace.id === fontFace.id) {
+  if (
+    layer.type === "text" &&
+    layer.fontFace &&
+    layer.fontFace.id === fontFace.id
+  ) {
     return layer;
   }
 
   // Check the layer's children.
   if (layer.children) {
-    for (var i=0, len=layer.children.length; i < len; i++) {
+    for (let i = 0, len = layer.children.length; i < len; i++) {
       if (layerContainsFontFace(layer.children[i], fontFace)) {
         return layer.children[i];
       }
@@ -136,8 +104,8 @@ function layerContainsFontFace (layer, fontFace) {
  *
  * @param {String} imageUrl
  */
-function handleImageLoad (imageUrl) {
-  _backingStores.forEach(function (backingStore) {
+function handleImageLoad(imageUrl) {
+  _backingStores.forEach(function(backingStore) {
     if (layerContainsImage(backingStore.layer, imageUrl)) {
       invalidateBackingStore(backingStore.id);
     }
@@ -150,72 +118,12 @@ function handleImageLoad (imageUrl) {
  *
  * @param {FontFace} fontFace
  */
-function handleFontLoad (fontFace) {
-  _backingStores.forEach(function (backingStore) {
+function handleFontLoad(fontFace) {
+  _backingStores.forEach(function(backingStore) {
     if (layerContainsFontFace(backingStore.layer, fontFace)) {
       invalidateBackingStore(backingStore.id);
     }
   });
-}
-
-/**
- * Draw a RenderLayer instance to a <canvas> context.
- *
- * @param {CanvasRenderingContext2d} ctx
- * @param {RenderLayer} layer
- */
-function drawRenderLayer (ctx, layer) {
-  var drawFunction = getDrawFunction(layer.type);
-
-  // Performance: avoid drawing hidden layers.
-  if (typeof layer.alpha === 'number' && layer.alpha <= 0) {
-    return;
-  }
-
-  // Establish drawing context for certain properties:
-  // - alpha
-  // - translate
-  var saveContext = (layer.alpha !== null && layer.alpha < 1) ||
-                    (layer.translateX || layer.translateY);
-
-  if (saveContext) {
-    ctx.save();
-
-    // Alpha:
-    if (layer.alpha !== null && layer.alpha < 1) {
-      ctx.globalAlpha = layer.alpha;
-    }
-
-    // Translation:
-    if (layer.translateX || layer.translateY) {
-      ctx.translate(layer.translateX || 0, layer.translateY || 0);
-    }
-  }
-
-  // If the layer is bitmap-cacheable, draw in a pooled off-screen canvas.
-  // We disable backing stores on pad since we flip there.
-  if (layer.backingStoreId) {
-    drawCacheableRenderLayer(ctx, layer, drawFunction);
-  } else {
-    // Draw default properties, such as background color.
-    ctx.save();
-
-    // Draw custom properties if needed.
-    drawFunction && drawFunction(ctx, layer);
-    ctx.restore();
-
-    // Draw child layers, sorted by their z-index.
-    if (layer.children) {
-      layer.children.slice().sort(sortByZIndexAscending).forEach(function (childLayer) {
-        drawRenderLayer(ctx, childLayer);
-      });
-    }
-  }
-
-  // Pop the context state if we established a new drawing context.
-  if (saveContext) {
-    ctx.restore();
-  }
 }
 
 /**
@@ -225,21 +133,45 @@ function drawRenderLayer (ctx, layer) {
  * @param {CanvasRenderingContext2d} ctx
  * @param {RenderLayer} layer
  */
-function drawBaseRenderLayer (ctx, layer) {
-  var frame = layer.frame;
+function drawBaseRenderLayer(ctx, layer) {
+  const frame = layer.frame;
 
   // Border radius:
   if (layer.borderRadius) {
     ctx.beginPath();
     ctx.moveTo(frame.x + layer.borderRadius, frame.y);
-    ctx.arcTo(frame.x + frame.width, frame.y, frame.x + frame.width, frame.y + frame.height, layer.borderRadius);
-    ctx.arcTo(frame.x + frame.width, frame.y + frame.height, frame.x, frame.y + frame.height, layer.borderRadius);
-    ctx.arcTo(frame.x, frame.y + frame.height, frame.x, frame.y, layer.borderRadius);
-    ctx.arcTo(frame.x, frame.y, frame.x + frame.width, frame.y, layer.borderRadius);
+    ctx.arcTo(
+      frame.x + frame.width,
+      frame.y,
+      frame.x + frame.width,
+      frame.y + frame.height,
+      layer.borderRadius
+    );
+    ctx.arcTo(
+      frame.x + frame.width,
+      frame.y + frame.height,
+      frame.x,
+      frame.y + frame.height,
+      layer.borderRadius
+    );
+    ctx.arcTo(
+      frame.x,
+      frame.y + frame.height,
+      frame.x,
+      frame.y,
+      layer.borderRadius
+    );
+    ctx.arcTo(
+      frame.x,
+      frame.y,
+      frame.x + frame.width,
+      frame.y,
+      layer.borderRadius
+    );
     ctx.closePath();
 
     // Create a clipping path when drawing an image or using border radius.
-    if (layer.type === 'image') {
+    if (layer.type === "image") {
       ctx.clip();
     }
 
@@ -277,6 +209,181 @@ function drawBaseRenderLayer (ctx, layer) {
 }
 
 /**
+ * @private
+ */
+function drawImageRenderLayer(ctx, layer) {
+  drawBaseRenderLayer(ctx, layer);
+
+  if (!layer.imageUrl) {
+    return;
+  }
+
+  // Don't draw until loaded
+  const image = ImageCache.get(layer.imageUrl);
+  if (!image.isLoaded()) {
+    return;
+  }
+
+  drawImage(
+    ctx,
+    image,
+    layer.frame.x,
+    layer.frame.y,
+    layer.frame.width,
+    layer.frame.height
+  );
+}
+
+/**
+ * @private
+ */
+function drawTextRenderLayer(ctx, layer) {
+  drawBaseRenderLayer(ctx, layer);
+
+  // Fallback to standard font.
+  const fontFace = layer.fontFace || FontFace.Default();
+
+  // Don't draw text until loaded
+  if (!isFontLoaded(fontFace)) {
+    return;
+  }
+
+  drawText(
+    ctx,
+    layer.text,
+    layer.frame.x,
+    layer.frame.y,
+    layer.frame.width,
+    layer.frame.height,
+    fontFace,
+    {
+      fontSize: layer.fontSize,
+      lineHeight: layer.lineHeight,
+      textAlign: layer.textAlign,
+      color: layer.color
+    }
+  );
+}
+
+/**
+ * @private
+ */
+function drawGradientRenderLayer(ctx, layer) {
+  drawBaseRenderLayer(ctx, layer);
+
+  // Default to linear gradient from top to bottom.
+  const x1 = layer.x1 || layer.frame.x;
+  const y1 = layer.y1 || layer.frame.y;
+  const x2 = layer.x2 || layer.frame.x;
+  const y2 = layer.y2 || layer.frame.y + layer.frame.height;
+  drawGradient(
+    ctx,
+    x1,
+    y1,
+    x2,
+    y2,
+    layer.colorStops,
+    layer.frame.x,
+    layer.frame.y,
+    layer.frame.width,
+    layer.frame.height
+  );
+}
+
+const layerTypesToDrawFunction = {
+  image: drawImageRenderLayer,
+  text: drawTextRenderLayer,
+  gradient: drawGradientRenderLayer
+};
+
+function getDrawFunction(type) {
+  return layerTypesToDrawFunction.hasOwnProperty(type)
+    ? layerTypesToDrawFunction[type]
+    : drawBaseRenderLayer;
+}
+
+function registerLayerType(type, drawFunction) {
+  if (layerTypesToDrawFunction.hasOwnProperty(type)) {
+    throw new Error(`type ${type} already registered`);
+  }
+
+  layerTypesToDrawFunction[type] = drawFunction;
+}
+
+/**
+ * @private
+ */
+function sortByZIndexAscending(layerA, layerB) {
+  return (layerA.zIndex || 0) - (layerB.zIndex || 0);
+}
+
+let drawCacheableRenderLayer = null;
+
+/**
+ * Draw a RenderLayer instance to a <canvas> context.
+ *
+ * @param {CanvasRenderingContext2d} ctx
+ * @param {RenderLayer} layer
+ */
+function drawRenderLayer(ctx, layer) {
+  const drawFunction = getDrawFunction(layer.type);
+
+  // Performance: avoid drawing hidden layers.
+  if (typeof layer.alpha === "number" && layer.alpha <= 0) {
+    return;
+  }
+
+  // Establish drawing context for certain properties:
+  // - alpha
+  // - translate
+  const saveContext =
+    (layer.alpha !== null && layer.alpha < 1) ||
+    (layer.translateX || layer.translateY);
+
+  if (saveContext) {
+    ctx.save();
+
+    // Alpha:
+    if (layer.alpha !== null && layer.alpha < 1) {
+      ctx.globalAlpha = layer.alpha;
+    }
+
+    // Translation:
+    if (layer.translateX || layer.translateY) {
+      ctx.translate(layer.translateX || 0, layer.translateY || 0);
+    }
+  }
+
+  // If the layer is bitmap-cacheable, draw in a pooled off-screen canvas.
+  // We disable backing stores on pad since we flip there.
+  if (layer.backingStoreId) {
+    drawCacheableRenderLayer(ctx, layer, drawFunction);
+  } else {
+    // Draw default properties, such as background color.
+    ctx.save();
+
+    // Draw custom properties if needed.
+    drawFunction && drawFunction(ctx, layer);
+    ctx.restore();
+
+    // Draw child layers, sorted by their z-index.
+    if (layer.children) {
+      layer.children
+        .slice()
+        .sort(sortByZIndexAscending)
+        .forEach(function(childLayer) {
+          drawRenderLayer(ctx, childLayer);
+        });
+    }
+  }
+
+  // Pop the context state if we established a new drawing context.
+  if (saveContext) {
+    ctx.restore();
+  }
+}
+
+/**
  * Draw a bitmap-cacheable layer into a pooled <canvas>. The result will be
  * drawn into the given context. This will populate the layer backing store
  * cache with the result.
@@ -286,19 +393,24 @@ function drawBaseRenderLayer (ctx, layer) {
  * @param {Function} drawFunction
  * @private
  */
-function drawCacheableRenderLayer (ctx, layer, drawFunction) {
+drawCacheableRenderLayer = (ctx, layer, drawFunction) => {
   // See if there is a pre-drawn canvas in the pool.
-  var backingStore = getBackingStore(layer.backingStoreId);
-  var backingStoreScale = layer.scale || window.devicePixelRatio;
-  var frameOffsetY = layer.frame.y;
-  var frameOffsetX = layer.frame.x;
-  var backingContext;
+  let backingStore = getBackingStore(layer.backingStoreId);
+  const backingStoreScale = layer.scale || window.devicePixelRatio;
+  const frameOffsetY = layer.frame.y;
+  const frameOffsetX = layer.frame.x;
+  let backingContext;
 
   if (!backingStore) {
     if (_backingStores.length >= Canvas.poolSize) {
       // Re-use the oldest backing store once we reach the pooling limit.
       backingStore = _backingStores[0].canvas;
-      Canvas.call(backingStore, layer.frame.width, layer.frame.height, backingStoreScale);
+      Canvas.call(
+        backingStore,
+        layer.frame.width,
+        layer.frame.height,
+        backingStoreScale
+      );
 
       // Move the re-use canvas to the front of the queue.
       _backingStores[0].id = layer.backingStoreId;
@@ -306,7 +418,11 @@ function drawCacheableRenderLayer (ctx, layer, drawFunction) {
       _backingStores.push(_backingStores.shift());
     } else {
       // Create a new backing store, we haven't yet reached the pooling limit
-      backingStore = new Canvas(layer.frame.width, layer.frame.height, backingStoreScale);
+      backingStore = new Canvas(
+        layer.frame.width,
+        layer.frame.height,
+        backingStoreScale
+      );
       _backingStores.push({
         id: layer.backingStoreId,
         layer: layer,
@@ -316,7 +432,7 @@ function drawCacheableRenderLayer (ctx, layer, drawFunction) {
 
     // Draw into the backing <canvas> at (0, 0) - we will later use the
     // <canvas> to draw the layer as an image at the proper coordinates.
-    backingContext = backingStore.getContext('2d');
+    backingContext = backingStore.getContext("2d");
     layer.translate(-frameOffsetX, -frameOffsetY);
 
     // Draw default properties, such as background color.
@@ -328,9 +444,12 @@ function drawCacheableRenderLayer (ctx, layer, drawFunction) {
 
     // Draw child layers, sorted by their z-index.
     if (layer.children) {
-      layer.children.slice().sort(sortByZIndexAscending).forEach(function (childLayer) {
-        drawRenderLayer(backingContext, childLayer);
-      });
+      layer.children
+        .slice()
+        .sort(sortByZIndexAscending)
+        .forEach(function(childLayer) {
+          drawRenderLayer(backingContext, childLayer);
+        });
     }
 
     // Restore layer's original frame.
@@ -340,86 +459,40 @@ function drawCacheableRenderLayer (ctx, layer, drawFunction) {
   // We have the pre-rendered canvas ready, draw it into the destination canvas.
   if (layer.clipRect) {
     // Fill the clipping rect in the destination canvas.
-    var sx = (layer.clipRect.x - layer.frame.x) * backingStoreScale;
-    var sy = (layer.clipRect.y - layer.frame.y) * backingStoreScale;
-    var sw = layer.clipRect.width * backingStoreScale;
-    var sh = layer.clipRect.height * backingStoreScale;
-    var dx = layer.clipRect.x;
-    var dy = layer.clipRect.y;
-    var dw = layer.clipRect.width;
-    var dh = layer.clipRect.height;
+    const sx = (layer.clipRect.x - layer.frame.x) * backingStoreScale;
+    const sy = (layer.clipRect.y - layer.frame.y) * backingStoreScale;
+    const sw = layer.clipRect.width * backingStoreScale;
+    const sh = layer.clipRect.height * backingStoreScale;
+    const dx = layer.clipRect.x;
+    const dy = layer.clipRect.y;
+    const dw = layer.clipRect.width;
+    const dh = layer.clipRect.height;
 
     // No-op for zero size rects. iOS / Safari will throw an exception.
     if (sw > 0 && sh > 0) {
-      ctx.drawImage(backingStore.getRawCanvas(), sx, sy, sw, sh, dx, dy, dw, dh);
+      ctx.drawImage(
+        backingStore.getRawCanvas(),
+        sx,
+        sy,
+        sw,
+        sh,
+        dx,
+        dy,
+        dw,
+        dh
+      );
     }
   } else {
     // Fill the entire canvas
-    ctx.drawImage(backingStore.getRawCanvas(), layer.frame.x, layer.frame.y, layer.frame.width, layer.frame.height);
+    ctx.drawImage(
+      backingStore.getRawCanvas(),
+      layer.frame.x,
+      layer.frame.y,
+      layer.frame.width,
+      layer.frame.height
+    );
   }
-}
-
-/**
- * @private
- */
-function sortByZIndexAscending (layerA, layerB) {
-  return (layerA.zIndex || 0) - (layerB.zIndex || 0);
-}
-
-/**
- * @private
- */
-function drawImageRenderLayer (ctx, layer) {
-  drawBaseRenderLayer(ctx, layer);
-
-  if (!layer.imageUrl) {
-    return;
-  }
-
-  // Don't draw until loaded
-  var image = ImageCache.get(layer.imageUrl);
-  if (!image.isLoaded()) {
-    return;
-  }
-
-  drawImage(ctx, image, layer.frame.x, layer.frame.y, layer.frame.width, layer.frame.height);
-}
-
-/**
- * @private
- */
-function drawTextRenderLayer (ctx, layer) {
-  drawBaseRenderLayer(ctx, layer);
-
-  // Fallback to standard font.
-  var fontFace = layer.fontFace || FontFace.Default();
-
-  // Don't draw text until loaded
-  if (!isFontLoaded(fontFace)) {
-    return;
-  }
-
-  drawText(ctx, layer.text, layer.frame.x, layer.frame.y, layer.frame.width, layer.frame.height, fontFace, {
-    fontSize: layer.fontSize,
-    lineHeight: layer.lineHeight,
-    textAlign: layer.textAlign,
-    color: layer.color
-  });
-}
-
-/**
- * @private
- */
-function drawGradientRenderLayer (ctx, layer) {
-  drawBaseRenderLayer(ctx, layer);
-
-  // Default to linear gradient from top to bottom.
-  var x1 = layer.x1 || layer.frame.x;
-  var y1 = layer.y1 || layer.frame.y;
-  var x2 = layer.x2 || layer.frame.x;
-  var y2 = layer.y2 || layer.frame.y + layer.frame.height;
-  drawGradient(ctx, x1, y1, x2, y2, layer.colorStops, layer.frame.x, layer.frame.y, layer.frame.width, layer.frame.height);
-}
+};
 
 export {
   drawBaseRenderLayer,

@@ -1,15 +1,14 @@
-import path from 'path';
+import path from "path";
 
 const config = {
-  entry: './src/index.js',
+  entry: "./src/index.js",
   output: {
-    filename: 'bundle.js',
-    path: path.join(__dirname, '/dist'),
-
+    filename: "bundle.js",
+    path: path.join(__dirname, "/dist"),
 
     // the name of the exported library
 
-    libraryTarget: "commonjs", // universal module definition
+    libraryTarget: "commonjs" // universal module definition
     // the type of the exported library
   },
 
@@ -19,16 +18,18 @@ const config = {
         test: /\.js$/,
         exclude: /(node_modules)/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           query: {
-            plugins: ["transform-class-properties", "transform-object-rest-spread"]
+            plugins: [
+              "transform-class-properties",
+              "transform-object-rest-spread",
+              "transform-decorators-legacy"
+            ]
           }
         }
       }
     ]
-
-  },
-
+  }
 };
 
-export default config; 
+export default config;
