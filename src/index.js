@@ -1,17 +1,15 @@
-'use strict';
-
-import Surface from './Surface';
-import Layer from './Layer';
-import Group from './Group';
-import Image from './Image';
-import Text from './Text';
-import ListView from './ListView';
-import Gradient from './Gradient';
-import FontFace from './FontFace';
-import FrameUtils from './FrameUtils';
-import createCanvasComponent from './createCanvasComponent';
-import measureText from './measureText';
-import { registerLayerType } from './DrawingUtils';
+import Surface from "./Surface";
+import Layer from "./Layer";
+import Group from "./Group";
+import Image from "./Image";
+import Text from "./Text";
+import ListView from "./ListView";
+import Gradient from "./Gradient";
+import FontFace from "./FontFace";
+import FrameUtils from "./FrameUtils";
+import createCanvasComponent from "./createCanvasComponent";
+import measureText from "./measureText";
+import { registerLayerType } from "./DrawingUtils";
 
 export default {
   Surface,
@@ -25,5 +23,5 @@ export default {
   measureText,
   createCanvasComponent,
   FrameUtils,
-  registerLayerType,
+  registerLayerType
 };

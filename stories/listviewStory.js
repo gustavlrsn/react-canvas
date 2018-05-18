@@ -1,6 +1,5 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 
 import ReactCanvas from '../src/index'
 const {Gradient, ListView, Surface, Group, Image, Text} = ReactCanvas;

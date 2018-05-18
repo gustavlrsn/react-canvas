@@ -38,8 +38,12 @@
     "d3-scale": "^1.0.6",
     "del": "^3.0.0",
     "eslint": "^4.1.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-react": "^7.8.2",
     "jest": "^22.4.3",
     "lodash.range": "^3.2.0",
+    "prettier": "^1.12.1",
     "webpack": "^4.0.0",
     "webpack-cli": "^2.1.3"
   },
