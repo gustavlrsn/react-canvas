@@ -1,11 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import CanvasComponent from "./CanvasComponent";
-//import Layer from "./Layer";
-import Group from "./Group";
+import Core from "./Core";
 import ImageCache from "./ImageCache";
 import { easeInCubic } from "./Easing";
 import clamp from "./clamp";
+
+const RawImageName = "RawImage";
+const { Group } = Core;
 
 const FADE_DURATION = 200;
 
@@ -19,8 +21,6 @@ export class RawImage extends CanvasComponent {
     this.node.invalidateLayout();
   };
 }
-
-const RawImageName = "RawImage";
 
 export default class Image extends React.Component {
   static propTypes = {
@@ -64,7 +64,7 @@ export default class Image extends React.Component {
     }
 
     if (this.rawImageRef) {
-      this.rawImageRef.invalidateLayout();
+      this.rawImageRef.getLayer().invalidateLayout();
     }
   }
 

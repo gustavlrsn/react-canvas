@@ -29,7 +29,6 @@ const CanvasHostConfig = {
   },
 
   createInstance(type, props /*, internalInstanceHandle*/) {
-    console.log(type);
     const instance = new ctors[type](props);
 
     if (typeof instance.applyLayerProps !== "undefined") {
