@@ -1,4 +1,4 @@
-"use strict";
+/*"use strict";
 
 import createComponent from "./createComponent";
 import LayerMixin from "./LayerMixin";
@@ -54,4 +54,4 @@ function childrenAsString(children) {
   return "";
 }
 
-export default Text;
+export default Text;*/

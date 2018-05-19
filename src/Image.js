@@ -1,4 +1,4 @@
-'use strict';
+/*'use strict';
 
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
@@ -134,4 +134,4 @@ class Image extends Component {
   };
 }
 
-export default Image;
+export default Image;*/

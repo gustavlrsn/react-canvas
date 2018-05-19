@@ -1,24 +1,30 @@
-"use strict";
-
-// Adapted from ReactART:
-// https://github.com/reactjs/react-art
-
+import React from "react";
+import RenderLayer from "./RenderLayer";
 import { make } from "./FrameUtils";
 import * as EventTypes from "./EventTypes";
 
 let LAYER_GUID = 0;
 
-const LayerMixin = {
-  construct: function(element) {
-    this._currentElement = element;
+export default class CanvasComponent extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.subscriptions = null;
+    this.listeners = null;
+    this.node = new RenderLayer();
+    this._currentElement = null;
     this._layerId = LAYER_GUID++;
-  },
+  }
 
-  getPublicInstance: function() {
+  construct = element => {
+    this._currentElement = element;
+  };
+
+  getPublicInstance = () => {
     return this.node;
-  },
+  };
 
-  putEventListener: function(type, listener) {
+  putEventListener = (type, listener) => {
     const subscriptions = this.subscriptions || (this.subscriptions = {});
     const listeners = this.listeners || (this.listeners = {});
     listeners[type] = listener;
@@ -32,17 +38,17 @@ const LayerMixin = {
         delete subscriptions[type];
       }
     }
-  },
+  };
 
-  handleEvent: function() {
+  handleEvent = () => {
     // TODO
-  },
+  };
 
-  destroyEventListeners: function() {
+  destroyEventListeners = () => {
     // TODO
-  },
+  };
 
-  applyLayerProps: function(prevProps, props) {
+  applyCommonLayerProps = (prevProps, props) => {
     const layer = this.node;
     const style = props && props.style ? props.style : {};
     layer._originalStyle = style;
@@ -80,18 +86,18 @@ const LayerMixin = {
     for (const type in EventTypes) {
       this.putEventListener(EventTypes[type], props[type]);
     }
-  },
+  };
 
-  mountComponentIntoNode: function() {
+  mountComponentIntoNode = () => {
     throw new Error(
       "You cannot render a Canvas component standalone. " +
         "You need to wrap it in a Surface."
     );
-  },
+  };
 
-  unmountComponent: function() {
+  unmountComponent = () => {
     this.destroyEventListeners();
-  }
-};
+  };
 
-export default LayerMixin;
+  getLayer = () => this.node;
+}

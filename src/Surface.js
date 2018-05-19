@@ -56,7 +56,7 @@ class Surface extends React.Component {
     );
     this.node.draw = this.batchedTick;
 
-    this.mountNode = CanvasRenderer.createContainer(this.node);
+    this.mountNode = CanvasRenderer.createContainer(this);
     CanvasRenderer.updateContainer(this.props.children, this.mountNode, this);
 
     // Execute initial draw on mount.
@@ -77,6 +77,7 @@ class Surface extends React.Component {
       this.scale();
     }
 
+    console.log("did update");
     CanvasRenderer.updateContainer(this.props.children, this.mountNode, this);
 
     // Redraw updated render tree to <canvas>.
@@ -122,6 +123,7 @@ class Surface extends React.Component {
 
   // Drawing
   // =======
+  getLayer = () => this.node;
 
   getContext = () => {
     return this.canvas.getContext("2d");

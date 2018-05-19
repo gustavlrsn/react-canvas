@@ -1,10 +1,10 @@
 "use strict";
 
-import React from "react";
-import CanvasComponent from "./CanvasComponentDecorator";
+import CanvasComponent from "./CanvasComponent";
 
-@CanvasComponent
-class Gradient extends React.Component {
+class Gradient extends CanvasComponent {
+  displayName = "Gradient";
+
   applyLayerProps = (prevProps, props) => {
     const layer = this.node;
     layer.type = "gradient";
@@ -12,6 +12,10 @@ class Gradient extends React.Component {
     this.applyCommonLayerProps(prevProps, props);
     this.node.invalidateLayout();
   };
+
+  render() {
+    return [];
+  }
 }
 
 export default Gradient;

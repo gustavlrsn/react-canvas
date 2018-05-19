@@ -1,6 +1,6 @@
 import invariant from "fbjs/lib/invariant";
 import emptyObject from "fbjs/lib/emptyObject";
-import { Surface, Gradient } from "./index";
+import Gradient from "./Gradient";
 import ReactDOMFrameScheduling from "./ReactDOMFrameScheduling";
 
 const UPDATE_SIGNAL = {};
@@ -14,15 +14,16 @@ const CanvasHostConfig = {
     }
 
     child.inject(parentInstance);
+
+    // TODO draw?
   },
 
   createInstance(type, props /*, internalInstanceHandle*/) {
     const ctors = {
-      SURFACE: () => new Surface(props),
-      GRADIENT: () => new Gradient(props)
+      Gradient: Gradient
     };
 
-    const instance = ctors[type]();
+    const instance = new ctors[type](props);
 
     if (typeof instance.applyLayerProps !== "undefined") {
       instance.applyLayerProps({}, props);
@@ -81,7 +82,9 @@ const CanvasHostConfig = {
 
   now: ReactDOMFrameScheduling.now,
 
-  isPrimaryRenderer: true,
+  isPrimaryRenderer: false,
+
+  useSyncScheduling: true,
 
   mutation: {
     appendChild(parentInstance, child) {

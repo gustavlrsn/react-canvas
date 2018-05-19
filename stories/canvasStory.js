@@ -1,7 +1,8 @@
 import React from "react";
 import { storiesOf } from "@storybook/react";
 import ReactCanvas from "../src/index";
-const { Gradient, Surface } = ReactCanvas;
+const { Surface } = ReactCanvas;
+const Gradient = "Gradient";
 
 storiesOf("Gradient", module)
   .add("transparent-grey", () => {
@@ -13,7 +14,20 @@ storiesOf("Gradient", module)
           left={0}
           width={props.size.width}
           height={props.size.height}
-        />
+        >
+          <Gradient
+            style={{
+              top: 0,
+              left: 0,
+              width: props.size.width,
+              height: props.size.height
+            }}
+            colorStops={[
+              { color: "transparent", position: 0 },
+              { color: "#000", position: 1 }
+            ]}
+          />
+        </Surface>
       </div>
     );
   })

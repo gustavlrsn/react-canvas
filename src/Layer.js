@@ -1,4 +1,4 @@
-'use strict';
+/*'use strict';
 
 import createComponent from './createComponent';
 import LayerMixin from './LayerMixin';
@@ -27,4 +27,4 @@ const Layer = createComponent('Layer', LayerMixin, {
 
 });
 
-export default Layer;
+export default Layer;*/

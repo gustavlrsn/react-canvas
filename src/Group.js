@@ -1,4 +1,4 @@
-"use strict";
+/*"use strict";
 
 import createComponent from "./createComponent";
 import LayerMixin from "./LayerMixin";
@@ -34,4 +34,4 @@ const Group = createComponent("Group", {
   }
 });
 
-export default Group;
+export default Group;*/

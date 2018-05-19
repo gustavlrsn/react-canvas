@@ -7,7 +7,6 @@ import ListView from "./ListView";
 import Gradient from "./Gradient";
 import FontFace from "./FontFace";
 import FrameUtils from "./FrameUtils";
-import createCanvasComponent from "./createCanvasComponent";
 import measureText from "./measureText";
 import { registerLayerType } from "./DrawingUtils";
 
@@ -21,7 +20,6 @@ export default {
   Gradient,
   FontFace,
   measureText,
-  createCanvasComponent,
   FrameUtils,
   registerLayerType
 };
