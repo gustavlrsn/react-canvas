@@ -1,14 +1,11 @@
-import React from "react";
 import RenderLayer from "./RenderLayer";
 import { make } from "./FrameUtils";
 import * as EventTypes from "./EventTypes";
 
 let LAYER_GUID = 0;
 
-export default class CanvasComponent extends React.Component {
-  constructor(props) {
-    super(props);
-
+export default class CanvasComponent {
+  constructor() {
     this.subscriptions = null;
     this.listeners = null;
     this.node = new RenderLayer();
@@ -18,10 +15,6 @@ export default class CanvasComponent extends React.Component {
 
   construct = element => {
     this._currentElement = element;
-  };
-
-  getPublicInstance = () => {
-    return this.node;
   };
 
   putEventListener = (type, listener) => {
@@ -96,6 +89,7 @@ export default class CanvasComponent extends React.Component {
   };
 
   unmountComponent = () => {
+    console.log("Unmount");
     this.destroyEventListeners();
   };
 

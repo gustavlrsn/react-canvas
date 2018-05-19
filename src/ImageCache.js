@@ -1,30 +1,29 @@
-import EventEmitter from 'events';
+import EventEmitter from "events";
 
-var NOOP = function () {};
+const NOOP = function() {};
 
-function Img (src) {
+function Img(src) {
   this._originalSrc = src;
   this._img = new Image();
-  this._img.onload = this.emit.bind(this, 'load');
-  this._img.onerror = this.emit.bind(this, 'error');
+  this._img.onload = this.emit.bind(this, "load");
+  this._img.onerror = this.emit.bind(this, "error");
   this._img.crossOrigin = true;
   this._img.src = src;
 
   // The default impl of events emitter will throw on any 'error' event unless
   // there is at least 1 handler. Logging anything in this case is unnecessary
   // since the browser console will log it too.
-  this.on('error', NOOP);
+  this.on("error", NOOP);
 
   // Default is just 10.
   this.setMaxListeners(100);
 }
 
 Object.assign(Img.prototype, EventEmitter.prototype, {
-
   /**
    * Pooling owner looks for this
    */
-  destructor: function () {
+  destructor: function() {
     // Make sure we aren't leaking callbacks.
     this.removeAllListeners();
   },
@@ -34,7 +33,7 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {String}
    */
-  getOriginalSrc: function () {
+  getOriginalSrc: function() {
     return this._originalSrc;
   },
 
@@ -43,7 +42,7 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {HTMLImageElement}
    */
-  getRawImage: function () {
+  getRawImage: function() {
     return this._img;
   },
 
@@ -52,7 +51,7 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {Number}
    */
-  getWidth: function () {
+  getWidth: function() {
     return this._img.naturalWidth;
   },
 
@@ -61,89 +60,87 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {Number}
    */
-  getHeight: function () {
+  getHeight: function() {
     return this._img.naturalHeight;
   },
 
   /**
    * @return {Bool}
    */
-  isLoaded: function () {
+  isLoaded: function() {
     return this._img.naturalHeight > 0;
   }
-
 });
 
-var kInstancePoolLength = 300;
+const kInstancePoolLength = 300;
 
-var _instancePool = {
+const _instancePool = {
   length: 0,
   // Keep all the nodes in memory.
-  elements: {
-    
-  },
-  
+  elements: {},
+
   // Push with 0 frequency
-  push: function (hash, data) {
+  push: function(hash, data) {
     this.length++;
     this.elements[hash] = {
-      hash: hash, // Helps identifying 
+      hash: hash, // Helps identifying
       freq: 0,
       data: data
     };
   },
-  
-  get: function (path) {
-    var element = this.elements[path];
-    
-    if( element ){
+
+  get: function(path) {
+    const element = this.elements[path];
+
+    if (element) {
       element.freq++;
       return element.data;
     }
-    
+
     return null;
   },
-  
+
   // used to explicitely remove the path
-  removeElement: function (path) {
+  removeElement: function(path) {
     // Now almighty GC can claim this soul
-    var element = this.elements[path];
+    const element = this.elements[path];
     delete this.elements[path];
     this.length--;
     return element;
   },
-  
-  _reduceLeastUsed: function (least, currentHash) {
-    var current = _instancePool.elements[currentHash];
-    
-    if( least.freq > current.freq ){
+
+  _reduceLeastUsed: function(least, currentHash) {
+    const current = _instancePool.elements[currentHash];
+
+    if (least.freq > current.freq) {
       return current;
     }
-    
+
     return least;
   },
-  
-  popLeastUsed: function () {
-    var reducer = _instancePool._reduceLeastUsed;
-    var minUsed = Object.keys(this.elements).reduce(reducer, { freq: Infinity });
-    
-    if( minUsed.hash ){
-      return this.removeElement(minUsed.hash);  
+
+  popLeastUsed: function() {
+    const reducer = _instancePool._reduceLeastUsed;
+    const minUsed = Object.keys(this.elements).reduce(reducer, {
+      freq: Infinity
+    });
+
+    if (minUsed.hash) {
+      return this.removeElement(minUsed.hash);
     }
-    
+
     return null;
   }
 };
 
-var ImageCache = {
-
+const ImageCache = {
   /**
    * Retrieve an image from the cache
    *
    * @return {Img}
    */
-  get: function (src) {
-    var image = _instancePool.get(src);
+  get: function(src) {
+    let image = _instancePool.get(src);
     if (!image) {
       // Awesome LRU
       image = new Img(src);
@@ -154,7 +151,6 @@ var ImageCache = {
     }
     return image;
   }
-
 };
 
 export default ImageCache;

@@ -1,6 +1,21 @@
-'use strict';
+"use strict";
 
-var _fontFaces = {};
+const _fontFaces = {};
+
+/**
+ * @internal
+ */
+function getCacheKey(family, url, attributes) {
+  return (
+    family +
+    url +
+    Object.keys(attributes)
+      .sort()
+      .map(function(key) {
+        return attributes[key];
+      })
+  );
+}
 
 /**
  * @param {String} family The CSS font-family value
@@ -8,15 +23,14 @@ var _fontFaces = {};
  * @param {Object} attributes Font attributes supported: style, weight
  * @return {Object}
  */
-function FontFace (family, url, attributes) {
-  var fontFace;
-  var fontId;
+function FontFace(family, url, attributes) {
+  let fontFace;
 
   attributes = attributes || {};
-  attributes.style = attributes.style || 'normal';
+  attributes.style = attributes.style || "normal";
   attributes.weight = attributes.weight || 400;
 
-  fontId = getCacheKey(family, url, attributes);
+  const fontId = getCacheKey(family, url, attributes);
   fontFace = _fontFaces[fontId];
 
   if (!fontFace) {
@@ -37,17 +51,8 @@ function FontFace (family, url, attributes) {
  * @param {Number} fontWeight
  * @return {FontFace}
  */
-FontFace.Default = function (fontWeight) {
-  return FontFace('sans-serif', null, {weight: fontWeight});
+FontFace.Default = function(fontWeight) {
+  return FontFace("sans-serif", null, { weight: fontWeight });
 };
-
-/**
- * @internal
- */
-function getCacheKey (family, url, attributes) {
-  return family + url + Object.keys(attributes).sort().map(function (key) {
-    return attributes[key];
-  });
-}
 
 export default FontFace;

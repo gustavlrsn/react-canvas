@@ -66,6 +66,7 @@ class Surface extends React.Component {
   componentWillUnmount = () => {
     // Implemented in ReactMultiChild.Mixin
     //this.unmountChildren();
+    console.log("unmount");
   };
 
   componentDidUpdate = prevProps => {

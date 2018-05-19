@@ -1,5 +1,3 @@
-"use strict";
-
 import CanvasComponent from "./CanvasComponent";
 
 class Gradient extends CanvasComponent {
@@ -12,10 +10,6 @@ class Gradient extends CanvasComponent {
     this.applyCommonLayerProps(prevProps, props);
     this.node.invalidateLayout();
   };
-
-  render() {
-    return [];
-  }
 }
 
 export default Gradient;
