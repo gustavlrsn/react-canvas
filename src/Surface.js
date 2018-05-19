@@ -19,7 +19,7 @@ const CanvasRenderer = ReactFiberReconciler(CanvasHostConfig);
 class Surface extends React.Component {
   displayName = "Surface";
 
-  propTypes = {
+  static propTypes = {
     className: PropTypes.string,
     id: PropTypes.string,
     top: PropTypes.number.isRequired,
@@ -32,10 +32,8 @@ class Surface extends React.Component {
     style: PropTypes.object
   };
 
-  getDefaultProps = () => {
-    return {
-      scale: window.devicePixelRatio || 1
-    };
+  static defaultProps = {
+    scale: window.devicePixelRatio || 1
   };
 
   setCanvasRef = canvas => {

@@ -1,10 +1,9 @@
 "use strict";
 
 import createComponent from "./createComponent";
-import ContainerMixin from "./ContainerMixin";
 import LayerMixin from "./LayerMixin";
 
-const Group = createComponent("Group", LayerMixin, ContainerMixin, {
+const Group = createComponent("Group", {
   mountComponent: function(
     transaction,
     nativeParent,

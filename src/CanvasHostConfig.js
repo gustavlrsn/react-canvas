@@ -1,7 +1,7 @@
-import * as ReactScheduler from "react-scheduler";
 import invariant from "fbjs/lib/invariant";
 import emptyObject from "fbjs/lib/emptyObject";
 import { Surface, Gradient } from "./index";
+import ReactDOMFrameScheduling from "./ReactDOMFrameScheduling";
 
 const UPDATE_SIGNAL = {};
 
@@ -71,7 +71,7 @@ const CanvasHostConfig = {
     return emptyObject;
   },
 
-  scheduleDeferredCallback: ReactScheduler.scheduleWork,
+  scheduleDeferredCallback: ReactDOMFrameScheduling.rIC,
 
   shouldSetTextContent(type, props) {
     return (
@@ -79,7 +79,7 @@ const CanvasHostConfig = {
     );
   },
 
-  now: ReactScheduler.now,
+  now: ReactDOMFrameScheduling.now,
 
   isPrimaryRenderer: true,
 
