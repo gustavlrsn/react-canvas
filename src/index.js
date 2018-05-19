@@ -1,4 +1,5 @@
 import Surface from "./Surface";
+import Image from "./Image";
 import ListView from "./ListView";
 import FontFace from "./FontFace";
 import FrameUtils from "./FrameUtils";
@@ -9,7 +10,7 @@ export default {
   Surface: Surface,
   Layer: "Layer",
   Group: "Group",
-  Image: "Image",
+  Image: Image,
   Text: "Text",
   Gradient: "Gradient",
   ListView: ListView,

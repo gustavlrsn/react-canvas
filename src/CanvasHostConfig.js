@@ -3,6 +3,7 @@ import emptyObject from "fbjs/lib/emptyObject";
 import Gradient from "./Gradient";
 import Text from "./Text";
 import Group from "./Group";
+import { RawImage } from "./Image";
 import ReactDOMFrameScheduling from "./ReactDOMFrameScheduling";
 
 const UPDATE_SIGNAL = {};
@@ -10,7 +11,8 @@ const UPDATE_SIGNAL = {};
 const ctors = {
   Gradient: Gradient,
   Text: Text,
-  Group: Group
+  Group: Group,
+  RawImage: RawImage
 };
 
 const CanvasHostConfig = {
@@ -27,6 +29,7 @@ const CanvasHostConfig = {
   },
 
   createInstance(type, props /*, internalInstanceHandle*/) {
+    console.log(type);
     const instance = new ctors[type](props);
 
     if (typeof instance.applyLayerProps !== "undefined") {

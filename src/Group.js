@@ -5,6 +5,10 @@ class Group extends CanvasComponent {
     this.applyCommonLayerProps(prevProps, props);
     this.node.invalidateLayout();
   };
+
+  render() {
+    return [];
+  }
 }
 
 export default Group;

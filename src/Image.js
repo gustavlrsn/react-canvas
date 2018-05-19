@@ -1,51 +1,28 @@
-/*'use strict';
+import React from "react";
+import PropTypes from "prop-types";
+import CanvasComponent from "./CanvasComponent";
+//import Layer from "./Layer";
+import Group from "./Group";
+import ImageCache from "./ImageCache";
+import { easeInCubic } from "./Easing";
+import clamp from "./clamp";
 
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import createComponent from './createComponent';
-import LayerMixin from './LayerMixin';
-import Layer from './Layer';
-import Group from './Group';
-import ImageCache from './ImageCache';
-import {easeInCubic} from './Easing';
-import clamp from './clamp';
+const FADE_DURATION = 200;
 
-var FADE_DURATION = 200;
+export class RawImage extends CanvasComponent {
+  applyLayerProps = (prevProps, props) => {
+    const layer = this.node;
 
-var RawImage = createComponent('Image', LayerMixin, {
-
-  applyImageProps: function (prevProps, props) {
-    var layer = this.node;
-
-    layer.type = 'image';
+    layer.type = "image";
     layer.imageUrl = props.src;
-  },
-
-  mountComponent: function (
-    transaction,
-    nativeParent,
-    nativeContainerInfo,
-    context
-  ) {
-    var props = this._currentElement.props;
-    var layer = this.node;
-    this.applyLayerProps({}, props);
-    this.applyImageProps({}, props);
-    return layer;
-  },
-
-  receiveComponent: function (nextComponent, transaction, context) {
-    var prevProps = this._currentElement.props;
-    var props = nextComponent.props;
-    this.applyLayerProps(prevProps, props);
-    this.applyImageProps(prevProps, props);
-    this._currentElement = nextComponent;
+    this.applyCommonLayerProps(prevProps, props);
     this.node.invalidateLayout();
-  },
+  };
+}
 
-});
+const RawImageName = "RawImage";
 
-class Image extends Component {
+export default class Image extends React.Component {
   static propTypes = {
     src: PropTypes.string.isRequired,
     style: PropTypes.object,
@@ -56,7 +33,7 @@ class Image extends Component {
 
   constructor(props) {
     super(props);
-    var loaded = ImageCache.get(props.src).isLoaded();
+    const loaded = ImageCache.get(props.src).isLoaded();
 
     this.state = {
       loaded: loaded,
@@ -65,37 +42,42 @@ class Image extends Component {
   }
 
   componentDidMount() {
-    ImageCache.get(this.props.src).on('load', this.handleImageLoad);
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    if(nextProps.src !== this.props.src) {
-      ImageCache.get(this.props.src).removeListener('load', this.handleImageLoad);
-      ImageCache.get(nextProps.src).on('load', this.handleImageLoad);
-      var loaded = ImageCache.get(nextProps.src).isLoaded();
-      this.setState({loaded: loaded});
-    }
+    ImageCache.get(this.props.src).on("load", this.handleImageLoad);
   }
 
   componentWillUnmount() {
     if (this._pendingAnimationFrame) {
       cancelAnimationFrame(this._pendingAnimationFrame);
     }
-    ImageCache.get(this.props.src).removeListener('load', this.handleImageLoad);
+    ImageCache.get(this.props.src).removeListener("load", this.handleImageLoad);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.refs.image) {
-      this.refs.image.invalidateLayout();
+  componentDidUpdate(prevProps) {
+    if (this.props.src !== prevProps.src) {
+      ImageCache.get(prevProps.src).removeListener(
+        "load",
+        this.handleImageLoad
+      );
+      ImageCache.get(this.props.src).on("load", this.handleImageLoad);
+      const loaded = ImageCache.get(this.props.src).isLoaded();
+      this.setState({ loaded: loaded });
+    }
+
+    if (this.rawImageRef) {
+      this.rawImageRef.invalidateLayout();
     }
   }
 
+  setRawImageRef = ref => (this.rawImageRef = ref);
+  setGroupRef = ref => (this.groupRef = ref);
+
   render() {
-    var rawImage;
-    var imageStyle = Object.assign({}, this.props.style);
-    var style = Object.assign({}, this.props.style);
-    var backgroundStyle = Object.assign({}, this.props.style);
-    var useBackingStore = this.state.loaded ? this.props.useBackingStore : false;
+    const imageStyle = Object.assign({}, this.props.style);
+    const style = Object.assign({}, this.props.style);
+    const backgroundStyle = Object.assign({}, this.props.style);
+    const useBackingStore = this.state.loaded
+      ? this.props.useBackingStore
+      : false;
 
     // Hide the image until loaded.
     imageStyle.alpha = this.state.imageAlpha;
@@ -105,33 +87,43 @@ class Image extends Component {
     style.backgroundColor = imageStyle.backgroundColor = null;
     backgroundStyle.alpha = clamp(1 - this.state.imageAlpha, 0, 1);
 
+    // TODO background
+    // <Layer ref={this.setBackgroundRef} style={backgroundStyle}/>
     return (
-      React.createElement(Group, {ref: 'main', style: style},
-        React.createElement(Layer, {ref: 'background', style: backgroundStyle}),
-        React.createElement(RawImage, {ref: 'image', src: this.props.src, style: imageStyle, useBackingStore: useBackingStore})
-      )
+      <Group ref={this.setGroupRef} style={style}>
+        <RawImageName
+          ref={this.setRawImageRef}
+          src={this.props.src}
+          style={imageStyle}
+          useBackingStore={useBackingStore}
+        />
+      </Group>
     );
   }
 
   handleImageLoad = () => {
-    var imageAlpha = 1;
+    let imageAlpha = 1;
     if (this.props.fadeIn) {
       imageAlpha = 0;
       this._animationStartTime = Date.now();
-      this._pendingAnimationFrame = requestAnimationFrame(this.stepThroughAnimation);
+      this._pendingAnimationFrame = requestAnimationFrame(
+        this.stepThroughAnimation
+      );
     }
     this.setState({ loaded: true, imageAlpha: imageAlpha });
   };
 
   stepThroughAnimation = () => {
-    var fadeInDuration = this.props.fadeInDuration || FADE_DURATION;
-    var alpha = easeInCubic((Date.now() - this._animationStartTime) / fadeInDuration);
+    const fadeInDuration = this.props.fadeInDuration || FADE_DURATION;
+    let alpha = easeInCubic(
+      (Date.now() - this._animationStartTime) / fadeInDuration
+    );
     alpha = clamp(alpha, 0, 1);
     this.setState({ imageAlpha: alpha });
     if (alpha < 1) {
-      this._pendingAnimationFrame = requestAnimationFrame(this.stepThroughAnimation);
+      this._pendingAnimationFrame = requestAnimationFrame(
+        this.stepThroughAnimation
+      );
     }
   };
 }
-
-export default Image;*/

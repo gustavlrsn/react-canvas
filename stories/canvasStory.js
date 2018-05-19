@@ -1,7 +1,7 @@
 import React from "react";
 import { storiesOf } from "@storybook/react";
 import ReactCanvas from "../src/index";
-const { Gradient, Text, Group, Surface } = ReactCanvas;
+const { Gradient, Text, Group, Image, Surface } = ReactCanvas;
 
 storiesOf("Gradient", module)
   .add("transparent-grey", () => {
@@ -58,7 +58,7 @@ storiesOf("Gradient", module)
   });
 
 storiesOf("Text", module).add("hello-world", () => {
-  const props = { size: { width: 200, height: 200 } };
+  const props = { size: { width: 400, height: 400 } };
   return (
     <div>
       <Surface
@@ -89,6 +89,14 @@ storiesOf("Text", module).add("hello-world", () => {
           >
             Hello World 2
           </Text>
+
+          <Image
+            style={{
+              top: 50,
+              left: 0
+            }}
+            src="https://i.imgur.com/U1p9DSP.png"
+          />
         </Group>
       </Surface>
     </div>
