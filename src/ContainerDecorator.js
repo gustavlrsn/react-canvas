@@ -113,8 +113,6 @@ export default function apply(Class) {
         }
       }
     };
-    getHostNode = () => this.node;
-    getNativeNode = () => this.node;
 
     render() {
       return <Class {...this.props} />;

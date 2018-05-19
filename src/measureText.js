@@ -1,19 +1,17 @@
-'use strict';
+import { isFontLoaded } from "./FontUtils";
+import LineBreaker from "@craigmorton/linebreak";
 
-import {isFontLoaded} from './FontUtils';
-import LineBreaker from '@craigmorton/linebreak';
+const canvas = document.createElement("canvas");
+const ctx = canvas.getContext("2d");
 
-var canvas = document.createElement('canvas');
-var ctx = canvas.getContext('2d');
-
-var _cache = {};
-var _zeroMetrics = {
+const _cache = {};
+const _zeroMetrics = {
   width: 0,
   height: 0,
   lines: []
 };
 
-function getCacheKey (text, width, fontFace, fontSize, lineHeight) {
+function getCacheKey(text, width, fontFace, fontSize, lineHeight) {
   return text + width + fontFace.id + fontSize + lineHeight;
 }
 
@@ -27,9 +25,15 @@ function getCacheKey (text, width, fontFace, fontSize, lineHeight) {
  * @param {Number} lineHeight The line height in CSS pixels
  * @return {Object} Measured text size with `width` and `height` members.
  */
-export default function measureText (text, width, fontFace, fontSize, lineHeight) {
-  var cacheKey = getCacheKey(text, width, fontFace, fontSize, lineHeight);
-  var cached = _cache[cacheKey];
+export default function measureText(
+  text,
+  width,
+  fontFace,
+  fontSize,
+  lineHeight
+) {
+  const cacheKey = getCacheKey(text, width, fontFace, fontSize, lineHeight);
+  const cached = _cache[cacheKey];
   if (cached) {
     return cached;
   }
@@ -39,17 +43,23 @@ export default function measureText (text, width, fontFace, fontSize, lineHeight
     return _zeroMetrics;
   }
 
-  var measuredSize = {};
-  var textMetrics;
-  var lastMeasuredWidth;
-  var words;
-  var tryLine;
-  var currentLine;
-  var breaker;
-  var bk;
-  var lastBreak;
+  const measuredSize = {};
+  let textMetrics;
+  let lastMeasuredWidth;
+  let tryLine;
+  let currentLine;
+  let breaker;
+  let bk;
+  let lastBreak;
 
-  ctx.font = fontFace.attributes.style + ' normal ' + fontFace.attributes.weight + ' ' + fontSize + 'pt ' + fontFace.family;
+  ctx.font =
+    fontFace.attributes.style +
+    " normal " +
+    fontFace.attributes.weight +
+    " " +
+    fontSize +
+    "pt " +
+    fontFace.family;
   textMetrics = ctx.measureText(text);
 
   measuredSize.width = textMetrics.width;
@@ -58,39 +68,42 @@ export default function measureText (text, width, fontFace, fontSize, lineHeight
 
   if (measuredSize.width <= width) {
     // The entire text string fits.
-    measuredSize.lines.push({width: measuredSize.width, text: text});
+    measuredSize.lines.push({ width: measuredSize.width, text: text });
   } else {
     // Break into multiple lines.
     measuredSize.width = width;
-    currentLine = '';
+    currentLine = "";
     breaker = new LineBreaker(text);
-    
-    while (bk = breaker.nextBreak()) {
-      var word = text.slice(lastBreak ? lastBreak.position : 0, bk.position);
-      
+
+    while ((bk = breaker.nextBreak())) {
+      const word = text.slice(lastBreak ? lastBreak.position : 0, bk.position);
+
       tryLine = currentLine + word;
       textMetrics = ctx.measureText(tryLine);
       if (textMetrics.width > width || (lastBreak && lastBreak.required)) {
         measuredSize.height += lineHeight;
-        measuredSize.lines.push({width: lastMeasuredWidth, text: currentLine.trim()});
+        measuredSize.lines.push({
+          width: lastMeasuredWidth,
+          text: currentLine.trim()
+        });
         currentLine = word;
         lastMeasuredWidth = ctx.measureText(currentLine.trim()).width;
       } else {
         currentLine = tryLine;
         lastMeasuredWidth = textMetrics.width;
       }
-      
+
       lastBreak = bk;
     }
-    
+
     currentLine = currentLine.trim();
     if (currentLine.length > 0) {
       textMetrics = ctx.measureText(currentLine);
-      measuredSize.lines.push({width: textMetrics, text: currentLine});
+      measuredSize.lines.push({ width: textMetrics, text: currentLine });
     }
   }
 
   _cache[cacheKey] = measuredSize;
 
   return measuredSize;
-};
+}

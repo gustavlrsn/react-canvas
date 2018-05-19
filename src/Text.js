@@ -1,15 +1,14 @@
-'use strict';
+"use strict";
 
-import createComponent from './createComponent';
-import LayerMixin from './LayerMixin';
+import createComponent from "./createComponent";
+import LayerMixin from "./LayerMixin";
 
-var Text = createComponent('Text', LayerMixin, {
+const Text = createComponent("Text", LayerMixin, {
+  applyTextProps: function(prevProps, props) {
+    const style = props && props.style ? props.style : {};
+    const layer = this.node;
 
-  applyTextProps: function (prevProps, props) {
-    var style = (props && props.style) ? props.style : {};
-    var layer = this.node;
-
-    layer.type = 'text';
+    layer.type = "text";
     layer.text = childrenAsString(props.children);
 
     layer.color = style.color;
@@ -19,41 +18,40 @@ var Text = createComponent('Text', LayerMixin, {
     layer.textAlign = style.textAlign;
   },
 
-  mountComponent: function (
+  mountComponent: function(
     transaction,
     nativeParent,
     nativeContainerInfo,
     context
   ) {
-    var props = this._currentElement.props;
-    var layer = this.node;
+    const props = this._currentElement.props;
+    const layer = this.node;
     this.applyLayerProps({}, props);
     this.applyTextProps({}, props);
     return layer;
   },
 
-  receiveComponent: function (nextComponent, transaction, context) {
-    var props = nextComponent.props;
-    var prevProps = this._currentElement.props;
+  receiveComponent: function(nextComponent, transaction, context) {
+    const props = nextComponent.props;
+    const prevProps = this._currentElement.props;
     this.applyLayerProps(prevProps, props);
     this.applyTextProps(prevProps, props);
     this._currentElement = nextComponent;
     this.node.invalidateLayout();
   }
-
 });
 
 function childrenAsString(children) {
   if (!children) {
-    return '';
+    return "";
   }
-  if (typeof children === 'string') {
+  if (typeof children === "string") {
     return children;
   }
   if (children.length) {
-    return children.join('\n');
+    return children.join("\n");
   }
-  return '';
+  return "";
 }
 
 export default Text;

@@ -1,20 +1,21 @@
 "use strict";
 
 import React from "react";
+import ReactFiberReconciler from "react-reconciler";
+import CanvasHostConfig from "./CanvasHostConfig";
 import PropTypes from "prop-types";
-import ReactUpdates from "react-dom/lib/ReactUpdates";
 import RenderLayer from "./RenderLayer";
 import { make } from "./FrameUtils";
 import { drawRenderLayer } from "./DrawingUtils";
 import hitTest from "./hitTest";
 import layoutNode from "./layoutNode";
-import container from "./ContainerDecorator";
+
+const CanvasRenderer = ReactFiberReconciler(CanvasHostConfig);
 
 /**
  * Surface is a standard React component and acts as the main drawing canvas.
  * ReactCanvas components cannot be rendered outside a Surface.
  */
-@container
 class Surface extends React.Component {
   displayName = "Surface";
 
@@ -57,15 +58,8 @@ class Surface extends React.Component {
     );
     this.node.draw = this.batchedTick;
 
-    // This is the integration point between custom canvas components and React
-    const transaction = ReactUpdates.ReactReconcileTransaction.getPooled();
-    transaction.perform(
-      this.mountAndInjectChildrenAtRoot,
-      this,
-      this.props.children,
-      transaction
-    );
-    ReactUpdates.ReactReconcileTransaction.release(transaction);
+    this.mountNode = CanvasRenderer.createContainer(this.node);
+    CanvasRenderer.updateContainer(this.props.children, this.mountNode, this);
 
     // Execute initial draw on mount.
     this.node.draw();
@@ -73,21 +67,10 @@ class Surface extends React.Component {
 
   componentWillUnmount = () => {
     // Implemented in ReactMultiChild.Mixin
-    this.unmountChildren();
+    //this.unmountChildren();
   };
 
   componentDidUpdate = prevProps => {
-    // We have to manually apply child reconciliation since child are not
-    // declared in render().
-    const transaction = ReactUpdates.ReactReconcileTransaction.getPooled();
-    transaction.perform(
-      this.updateChildrenAtRoot,
-      this,
-      this.props.children,
-      transaction
-    );
-    ReactUpdates.ReactReconcileTransaction.release(transaction);
-
     // Re-scale the <canvas> when changing size.
     if (
       prevProps.width !== this.props.width ||
@@ -95,6 +78,8 @@ class Surface extends React.Component {
     ) {
       this.scale();
     }
+
+    CanvasRenderer.updateContainer(this.props.children, this.mountNode, this);
 
     // Redraw updated render tree to <canvas>.
     if (this.node) {

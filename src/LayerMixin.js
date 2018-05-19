@@ -1,15 +1,14 @@
-'use strict';
+"use strict";
 
 // Adapted from ReactART:
 // https://github.com/reactjs/react-art
 
-import {make} from './FrameUtils';
-import * as EventTypes from './EventTypes';
+import { make } from "./FrameUtils";
+import * as EventTypes from "./EventTypes";
 
-var LAYER_GUID = 0;
+let LAYER_GUID = 0;
 
-var LayerMixin = {
-
+const LayerMixin = {
   construct: function(element) {
     this._currentElement = element;
     this._layerId = LAYER_GUID++;
@@ -20,8 +19,8 @@ var LayerMixin = {
   },
 
   putEventListener: function(type, listener) {
-    var subscriptions = this.subscriptions || (this.subscriptions = {});
-    var listeners = this.listeners || (this.listeners = {});
+    const subscriptions = this.subscriptions || (this.subscriptions = {});
+    const listeners = this.listeners || (this.listeners = {});
     listeners[type] = listener;
     if (listener) {
       if (!subscriptions[type]) {
@@ -35,7 +34,7 @@ var LayerMixin = {
     }
   },
 
-  handleEvent: function(event) {
+  handleEvent: function() {
     // TODO
   },
 
@@ -43,9 +42,9 @@ var LayerMixin = {
     // TODO
   },
 
-  applyLayerProps: function (prevProps, props) {
-    var layer = this.node;
-    var style = (props && props.style) ? props.style : {};
+  applyLayerProps: function(prevProps, props) {
+    const layer = this.node;
+    const style = props && props.style ? props.style : {};
     layer._originalStyle = style;
 
     // Common layer properties
@@ -55,7 +54,12 @@ var LayerMixin = {
     layer.borderWidth = style.borderWidth;
     layer.borderRadius = style.borderRadius;
     layer.clipRect = style.clipRect;
-    layer.frame = make(style.left || 0, style.top || 0, style.width || 0, style.height || 0);
+    layer.frame = make(
+      style.left || 0,
+      style.top || 0,
+      style.width || 0,
+      style.height || 0
+    );
     layer.scale = style.scale;
     layer.translateX = style.translateX;
     layer.translateY = style.translateY;
@@ -73,24 +77,21 @@ var LayerMixin = {
     }
 
     // Register events
-    for (var type in EventTypes) {
+    for (const type in EventTypes) {
       this.putEventListener(EventTypes[type], props[type]);
     }
   },
 
-  mountComponentIntoNode: function(rootID, container) {
+  mountComponentIntoNode: function() {
     throw new Error(
-      'You cannot render a Canvas component standalone. ' +
-      'You need to wrap it in a Surface.'
+      "You cannot render a Canvas component standalone. " +
+        "You need to wrap it in a Surface."
     );
   },
 
   unmountComponent: function() {
     this.destroyEventListeners();
-  },
-  getHostNode: function () { return this.node },
-  getNativeNode: function () { return this.node },
-
+  }
 };
 
 export default LayerMixin;

@@ -359,10 +359,9 @@ function drawRenderLayer(ctx, layer) {
   if (layer.backingStoreId) {
     drawCacheableRenderLayer(ctx, layer, drawFunction);
   } else {
-    // Draw default properties, such as background color.
     ctx.save();
 
-    // Draw custom properties if needed.
+    // Draw
     drawFunction && drawFunction(ctx, layer);
     ctx.restore();
 

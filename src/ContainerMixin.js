@@ -1,13 +1,12 @@
-'use strict';
+"use strict";
 
 // Adapted from ReactART:
 // https://github.com/reactjs/react-art
-import React from 'react';
-import ReactMultiChild from 'react-dom/lib/ReactMultiChild';
-import emptyObject from 'fbjs/lib/emptyObject';
+import React from "react";
+import ReactMultiChild from "react-dom/lib/ReactMultiChild";
+import emptyObject from "fbjs/lib/emptyObject";
 
-var ContainerMixin = Object.assign({}, ReactMultiChild.Mixin, {
-
+const ContainerMixin = Object.assign({}, ReactMultiChild.Mixin, {
   /**
    * Moves a child component to the supplied index.
    *
@@ -16,8 +15,8 @@ var ContainerMixin = Object.assign({}, ReactMultiChild.Mixin, {
    * @protected
    */
   moveChild: function(child, afterNode, toIndex, lastIndex) {
-    var childNode = child._mountImage;
-    var mostRecentlyPlacedChild = this._mostRecentlyPlacedChild;
+    const childNode = child._mountImage;
+    const mostRecentlyPlacedChild = this._mostRecentlyPlacedChild;
     if (mostRecentlyPlacedChild == null) {
       // I'm supposed to be first.
       if (childNode.previousSibling) {
@@ -49,7 +48,7 @@ var ContainerMixin = Object.assign({}, ReactMultiChild.Mixin, {
    */
   createChild: function(child, afterNode, childNode) {
     child._mountImage = childNode;
-    var mostRecentlyPlacedChild = this._mostRecentlyPlacedChild;
+    const mostRecentlyPlacedChild = this._mostRecentlyPlacedChild;
     if (mostRecentlyPlacedChild == null) {
       // I'm supposed to be first.
       if (this.node.firstChild) {
@@ -104,26 +103,19 @@ var ContainerMixin = Object.assign({}, ReactMultiChild.Mixin, {
   // Shorthands
 
   mountAndInjectChildren: function(children, transaction, context) {
-    var mountedImages = this.mountChildren(
-      children,
-      transaction,
-      context
-    );
+    const mountedImages = this.mountChildren(children, transaction, context);
 
     // Each mount image corresponds to one of the flattened children
-    var i = 0;
-    for (var key in this._renderedChildren) {
+    let i = 0;
+    for (const key in this._renderedChildren) {
       if (this._renderedChildren.hasOwnProperty(key)) {
-        var child = this._renderedChildren[key];
+        const child = this._renderedChildren[key];
         child._mountImage = mountedImages[i];
         mountedImages[i].inject(this.node);
         i++;
       }
     }
-  },
-  getHostNode: function () { return this.node },
-  getNativeNode: function () { return this.node },
-
+  }
 });
 
 export default ContainerMixin;

@@ -1,20 +1,18 @@
-'use strict';
+"use strict";
 
-import createComponent from './createComponent';
-import ContainerMixin from './ContainerMixin';
-import LayerMixin from './LayerMixin';
-import RenderLayer from './RenderLayer';
+import createComponent from "./createComponent";
+import ContainerMixin from "./ContainerMixin";
+import LayerMixin from "./LayerMixin";
 
-var Group = createComponent('Group', LayerMixin, ContainerMixin, {
-
-  mountComponent: function (
+const Group = createComponent("Group", LayerMixin, ContainerMixin, {
+  mountComponent: function(
     transaction,
     nativeParent,
     nativeContainerInfo,
     context
   ) {
-    var props = this._currentElement.props;
-    var layer = this.node;
+    const props = this._currentElement.props;
+    const layer = this.node;
 
     this.applyLayerProps({}, props);
     this.mountAndInjectChildren(props.children, transaction, context);
@@ -22,20 +20,19 @@ var Group = createComponent('Group', LayerMixin, ContainerMixin, {
     return layer;
   },
 
-  receiveComponent: function (nextComponent, transaction, context) {
-    var props = nextComponent.props;
-    var prevProps = this._currentElement.props;
+  receiveComponent: function(nextComponent, transaction, context) {
+    const props = nextComponent.props;
+    const prevProps = this._currentElement.props;
     this.applyLayerProps(prevProps, props);
     this.updateChildren(props.children, transaction, context);
     this._currentElement = nextComponent;
     this.node.invalidateLayout();
   },
 
-  unmountComponent: function () {
+  unmountComponent: function() {
     LayerMixin.unmountComponent.call(this);
     this.unmountChildren();
   }
-
 });
 
 export default Group;

@@ -1,5 +1,3 @@
-"use strict";
-
 import { zero } from "./FrameUtils";
 import { invalidateBackingStore } from "./DrawingUtils";
 import * as EventTypes from "./EventTypes";
@@ -45,7 +43,7 @@ RenderLayer.prototype = {
    * @param {RenderLayer} referenceLayer
    */
   injectBefore: function(parentLayer) {
-    // FIXME
+    // TODO FIXME
     this.inject(parentLayer);
   },
 
@@ -185,6 +183,10 @@ RenderLayer.prototype = {
    */
   draw: function() {
     // Placeholer
+  },
+
+  eject: function() {
+    // TODO
   }
 };
 
