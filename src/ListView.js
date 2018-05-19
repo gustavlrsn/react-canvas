@@ -3,7 +3,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Scroller from "scroller";
-import Group from "./Group";
+import Core from "./Core";
+const { Group } = Core;
 
 class ListView extends Component {
   static propTypes = {

@@ -89,7 +89,7 @@ export default class CanvasComponent {
   };
 
   unmountComponent = () => {
-    console.log("Unmount");
+    console.log("Unmount canvas component");
     this.destroyEventListeners();
   };
 

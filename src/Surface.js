@@ -64,9 +64,7 @@ class Surface extends React.Component {
   };
 
   componentWillUnmount = () => {
-    // Implemented in ReactMultiChild.Mixin
-    //this.unmountChildren();
-    console.log("unmount");
+    // TODO destroy event listeners recursively
   };
 
   componentDidUpdate = prevProps => {
@@ -78,7 +76,6 @@ class Surface extends React.Component {
       this.scale();
     }
 
-    console.log("did update");
     CanvasRenderer.updateContainer(this.props.children, this.mountNode, this);
 
     // Redraw updated render tree to <canvas>.
