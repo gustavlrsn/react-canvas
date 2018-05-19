@@ -1,45 +1,4 @@
-/*"use strict";
-
-import createComponent from "./createComponent";
-import LayerMixin from "./LayerMixin";
-
-const Text = createComponent("Text", LayerMixin, {
-  applyTextProps: function(prevProps, props) {
-    const style = props && props.style ? props.style : {};
-    const layer = this.node;
-
-    layer.type = "text";
-    layer.text = childrenAsString(props.children);
-
-    layer.color = style.color;
-    layer.fontFace = style.fontFace;
-    layer.fontSize = style.fontSize;
-    layer.lineHeight = style.lineHeight;
-    layer.textAlign = style.textAlign;
-  },
-
-  mountComponent: function(
-    transaction,
-    nativeParent,
-    nativeContainerInfo,
-    context
-  ) {
-    const props = this._currentElement.props;
-    const layer = this.node;
-    this.applyLayerProps({}, props);
-    this.applyTextProps({}, props);
-    return layer;
-  },
-
-  receiveComponent: function(nextComponent, transaction, context) {
-    const props = nextComponent.props;
-    const prevProps = this._currentElement.props;
-    this.applyLayerProps(prevProps, props);
-    this.applyTextProps(prevProps, props);
-    this._currentElement = nextComponent;
-    this.node.invalidateLayout();
-  }
-});
+import CanvasComponent from "./CanvasComponent";
 
 function childrenAsString(children) {
   if (!children) {
@@ -54,4 +13,23 @@ function childrenAsString(children) {
   return "";
 }
 
-export default Text;*/
+class Text extends CanvasComponent {
+  applyLayerProps = (prevProps, props) => {
+    const style = props && props.style ? props.style : {};
+    const layer = this.node;
+
+    layer.type = "text";
+    layer.text = childrenAsString(props.children);
+
+    layer.color = style.color;
+    layer.fontFace = style.fontFace;
+    layer.fontSize = style.fontSize;
+    layer.lineHeight = style.lineHeight;
+    layer.textAlign = style.textAlign;
+
+    this.applyCommonLayerProps(prevProps, props);
+    this.node.invalidateLayout();
+  };
+}
+
+export default Text;

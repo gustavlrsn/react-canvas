@@ -1,9 +1,17 @@
 import invariant from "fbjs/lib/invariant";
 import emptyObject from "fbjs/lib/emptyObject";
 import Gradient from "./Gradient";
+import Text from "./Text";
+import Group from "./Group";
 import ReactDOMFrameScheduling from "./ReactDOMFrameScheduling";
 
 const UPDATE_SIGNAL = {};
+
+const ctors = {
+  Gradient: Gradient,
+  Text: Text,
+  Group: Group
+};
 
 const CanvasHostConfig = {
   appendInitialChild(parentInstance, child) {
@@ -13,16 +21,12 @@ const CanvasHostConfig = {
       return;
     }
 
-    child.inject(parentInstance);
+    child.getLayer().inject(parentInstance.getLayer());
 
     // TODO draw?
   },
 
   createInstance(type, props /*, internalInstanceHandle*/) {
-    const ctors = {
-      Gradient: Gradient
-    };
-
     const instance = new ctors[type](props);
 
     if (typeof instance.applyLayerProps !== "undefined") {
