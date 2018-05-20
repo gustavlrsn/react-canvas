@@ -18,7 +18,6 @@ export class RawImage extends CanvasComponent {
     layer.type = "image";
     layer.imageUrl = props.src;
     this.applyCommonLayerProps(prevProps, props);
-    this.node.invalidateLayout();
   };
 }
 

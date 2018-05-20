@@ -28,7 +28,6 @@ class Text extends CanvasComponent {
     layer.textAlign = style.textAlign;
 
     this.applyCommonLayerProps(prevProps, props);
-    this.node.invalidateLayout();
   };
 }
 

@@ -8,7 +8,6 @@ class Gradient extends CanvasComponent {
     layer.type = "gradient";
     layer.colorStops = props.colorStops || [];
     this.applyCommonLayerProps(prevProps, props);
-    this.node.invalidateLayout();
   };
 }
 

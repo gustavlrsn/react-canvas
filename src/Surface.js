@@ -1,28 +1,14 @@
 "use strict";
 
 import React from "react";
-import ReactFiberReconciler from "react-reconciler";
-import CanvasHostConfig from "./CanvasHostConfig";
 import PropTypes from "prop-types";
 import RenderLayer from "./RenderLayer";
 import { make } from "./FrameUtils";
 import { drawRenderLayer } from "./DrawingUtils";
 import hitTest from "./hitTest";
 import layoutNode from "./layoutNode";
-import { getClosestInstanceFromNode } from "./ReactDOMComponentTree";
 
-const CanvasRenderer = ReactFiberReconciler(CanvasHostConfig);
 const MOUSE_CLICK_DURATION_MS = 300;
-
-CanvasRenderer.injectIntoDevTools({
-  findFiberByHostInstance: getClosestInstanceFromNode,
-  bundleType: process.env.NODE_ENV !== "production" ? 1 : 0,
-  version: React.version || 16,
-  rendererPackageName: "react-canvas",
-  getInspectorDataForViewTag: (...args) => {
-    console.log(args);
-  }
-});
 
 /**
  * Surface is a standard React component and acts as the main drawing canvas.
@@ -48,6 +34,8 @@ class Surface extends React.Component {
     scale: window.devicePixelRatio || 1
   };
 
+  static canvasRenderer = null;
+
   setCanvasRef = canvas => {
     this.canvas = canvas;
   };
@@ -68,15 +56,19 @@ class Surface extends React.Component {
     );
     this.node.draw = this.batchedTick;
 
-    this.mountNode = CanvasRenderer.createContainer(this);
-    CanvasRenderer.updateContainer(this.props.children, this.mountNode, this);
+    this.mountNode = Surface.canvasRenderer.createContainer(this);
+    Surface.canvasRenderer.updateContainer(
+      this.props.children,
+      this.mountNode,
+      this
+    );
 
     // Execute initial draw on mount.
     this.node.draw();
   };
 
   componentWillUnmount = () => {
-    CanvasRenderer.updateContainer(null, this.mountNode, this);
+    Surface.canvasRenderer.updateContainer(null, this.mountNode, this);
   };
 
   componentDidUpdate = prevProps => {
@@ -88,7 +80,11 @@ class Surface extends React.Component {
       this.scale();
     }
 
-    CanvasRenderer.updateContainer(this.props.children, this.mountNode, this);
+    Surface.canvasRenderer.updateContainer(
+      this.props.children,
+      this.mountNode,
+      this
+    );
 
     // Redraw updated render tree to <canvas>.
     if (this.node) {

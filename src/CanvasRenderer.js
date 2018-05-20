@@ -1,3 +1,4 @@
+import React from "react";
 import invariant from "fbjs/lib/invariant";
 import emptyObject from "fbjs/lib/emptyObject";
 import Gradient from "./Gradient";
@@ -5,6 +6,8 @@ import Text from "./Text";
 import Group from "./Group";
 import { RawImage } from "./Image";
 import ReactDOMFrameScheduling from "./ReactDOMFrameScheduling";
+import ReactFiberReconciler from "react-reconciler";
+import { getClosestInstanceFromNode } from "./ReactDOMComponentTree";
 
 const UPDATE_SIGNAL = {};
 
@@ -155,4 +158,20 @@ const CanvasHostConfig = {
   }
 };
 
-export default CanvasHostConfig;
+const CanvasRenderer = ReactFiberReconciler(CanvasHostConfig);
+
+CanvasRenderer.injectIntoDevTools({
+  findFiberByHostInstance: getClosestInstanceFromNode,
+  bundleType: process.env.NODE_ENV !== "production" ? 1 : 0,
+  version: React.version || 16,
+  rendererPackageName: "react-canvas",
+  getInspectorDataForViewTag: (...args) => {
+    console.log(args);
+  }
+});
+
+CanvasRenderer.registerComponentConstructor = (name, ctor) => {
+  ctors[name] = ctor;
+};
+
+export default CanvasRenderer;
