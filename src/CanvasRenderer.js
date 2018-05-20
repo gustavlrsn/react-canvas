@@ -124,21 +124,27 @@ const CanvasHostConfig = {
     insertBefore(parentInstance, child, beforeChild) {
       const parentLayer = parentInstance.getLayer();
       child.getLayer().injectBefore(parentLayer, beforeChild.getLayer());
+      parentLayer.invalidateLayout();
     },
 
     insertInContainerBefore(parentInstance, child, beforeChild) {
       const parentLayer = parentInstance.getLayer();
       child.getLayer().injectBefore(parentLayer, beforeChild.getLayer());
+      parentLayer.invalidateLayout();
     },
 
     removeChild(parentInstance, child) {
+      const parentLayer = parentInstance.getLayer();
       child.destroyEventListeners();
       child.getLayer().remove();
+      parentLayer.invalidateLayout();
     },
 
     removeChildFromContainer(parentInstance, child) {
+      const parentLayer = parentInstance.getLayer();
       child.destroyEventListeners();
       child.getLayer().remove();
+      parentLayer.invalidateLayout();
     },
 
     commitTextUpdate(/*textInstance, oldText, newText*/) {
@@ -151,7 +157,7 @@ const CanvasHostConfig = {
 
     commitUpdate(instance, updatePayload, type, oldProps, newProps) {
       if (typeof instance.applyLayerProps !== "undefined") {
-        instance.applyLayerProps(newProps, oldProps);
+        instance.applyLayerProps(oldProps, newProps);
         instance.getLayer().invalidateLayout();
       }
     }
