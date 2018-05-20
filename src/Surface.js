@@ -9,8 +9,20 @@ import { make } from "./FrameUtils";
 import { drawRenderLayer } from "./DrawingUtils";
 import hitTest from "./hitTest";
 import layoutNode from "./layoutNode";
+import { getClosestInstanceFromNode } from "./ReactDOMComponentTree";
 
 const CanvasRenderer = ReactFiberReconciler(CanvasHostConfig);
+const MOUSE_CLICK_DURATION_MS = 300;
+
+CanvasRenderer.injectIntoDevTools({
+  findFiberByHostInstance: getClosestInstanceFromNode,
+  bundleType: process.env.NODE_ENV !== "production" ? 1 : 0,
+  version: React.version || 16,
+  rendererPackageName: "react-canvas",
+  getInspectorDataForViewTag: (...args) => {
+    console.log(args);
+  }
+});
 
 /**
  * Surface is a standard React component and acts as the main drawing canvas.
@@ -113,9 +125,14 @@ class Surface extends React.Component {
       onTouchMove: this.handleTouchMove,
       onTouchEnd: this.handleTouchEnd,
       onTouchCancel: this.handleTouchEnd,
-      onClick: this.handleClick,
+      onMouseDown: this.handleMouseEvent,
+      onMouseUp: this.handleMouseEvent,
+      onMouseMove: this.handleMouseEvent,
+      onMouseOver: this.handleMouseEvent,
+      onMouseOut: this.handleMouseEvent,
       onContextMenu: this.handleContextMenu,
-      onDoubleClick: this.handleDoubleClick
+      onClick: this.handleMouseEvent,
+      onDoubleClick: this.handleMouseEvent
     });
   }
 
@@ -181,10 +198,12 @@ class Surface extends React.Component {
 
   handleTouchStart = e => {
     const hitTarget = hitTest(e, this.node, this.canvas);
+
     let touch;
     if (hitTarget) {
       // On touchstart: capture the current hit target for the given touch.
       this._touches = this._touches || {};
+
       for (let i = 0, len = e.touches.length; i < len; i++) {
         touch = e.touches[i];
         this._touches[touch.identifier] = hitTarget;
@@ -215,15 +234,62 @@ class Surface extends React.Component {
     }
   };
 
-  handleClick = e => {
-    this.hitTest(e);
+  handleMouseEvent = e => {
+    if (e.type === "mousedown") {
+      // Keep track of initial mouse down info to detect a proper click.
+      this._lastMouseDownTimestamp = e.timeStamp;
+      this._lastMouseDownPosition = [e.pageX, e.pageY];
+      this._draggedSinceMouseDown = false;
+    } else if (
+      e.type === "click" ||
+      e.type === "dblclick" ||
+      e.type === "mouseout"
+    ) {
+      if (e.type === "click" || e.type === "dblclick") {
+        // Forward the click if the mouse did not travel and it was a short enough duration.
+        if (
+          this._draggedSinceMouseDown ||
+          !this._lastMouseDownTimestamp ||
+          e.timeStamp - this._lastMouseDownTimestamp > MOUSE_CLICK_DURATION_MS
+        ) {
+          return;
+        }
+      }
+
+      this._lastMouseDownTimestamp = null;
+      this._lastMouseDownPosition = null;
+      this._draggedSinceMouseDown = false;
+    } else if (
+      e.type === "mousemove" &&
+      !this._draggedSinceMouseDown &&
+      this._lastMouseDownPosition
+    ) {
+      // Detect dragging
+      this._draggedSinceMouseDown =
+        e.pageX !== this._lastMouseDownPosition[0] ||
+        e.pageY !== this._lastMouseDownPosition[1];
+    }
+
+    let hitTarget = hitTest(e, this.node, this.canvas);
+
+    // For mouseout events, we need to save the last target so we fire it again to that target
+    // since we won't have a hit (since the mouse has left the canvas.)
+    if (e.type === "mouseout") {
+      hitTarget = this._lastHitTarget;
+    } else {
+      this._lastHitTarget = hitTarget;
+    }
+
+    if (hitTarget) {
+      const handler = hitTarget[hitTest.getHitHandle(e.type)];
+
+      if (handler) {
+        handler(e);
+      }
+    }
   };
 
   handleContextMenu = e => {
-    this.hitTest(e);
-  };
-
-  handleDoubleClick = e => {
     this.hitTest(e);
   };
 }

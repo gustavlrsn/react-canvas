@@ -42,9 +42,12 @@ RenderLayer.prototype = {
    * @param {RenderLayer} parentLayer
    * @param {RenderLayer} referenceLayer
    */
-  injectBefore: function(parentLayer) {
-    // TODO FIXME
-    this.inject(parentLayer);
+  injectBefore: function(parentLayer, beforeLayer) {
+    this.remove();
+    const beforeIndex = parentLayer.children.indexOf(beforeLayer);
+    parentLayer.children.splice(beforeIndex, 0, this);
+    this.parentLayer = parentLayer;
+    this.zIndex = beforeLayer.zIndex || 0;
   },
 
   /**
@@ -66,6 +69,26 @@ RenderLayer.prototype = {
         this.parentLayer.children.indexOf(this),
         1
       );
+
+      this.parentLayer = null;
+    }
+  },
+
+  /**
+   * Move a layer to top.
+   */
+  moveToTop: function() {
+    if (
+      this.parentLayer &&
+      this.parentLayer.children.length > 1 &&
+      this.parentLayer.children[0] !== this
+    ) {
+      this.parentLayer.children.splice(
+        this.parentLayer.children.indexOf(this),
+        1
+      );
+
+      this.parentLayer.children.unshift(this);
     }
   },
 
@@ -183,10 +206,6 @@ RenderLayer.prototype = {
    */
   draw: function() {
     // Placeholer
-  },
-
-  eject: function() {
-    // TODO
   }
 };
 

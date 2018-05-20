@@ -105,6 +105,7 @@ function hitTest(e, rootLayer, rootNode) {
 
   touchY = touchY - window.pageYOffset;
   touchX = touchX - window.pageXOffset;
+
   return getLayerAtPoint(
     rootLayer,
     e.type,

@@ -43,6 +43,10 @@ class ListView extends Component {
         onTouchStart: this.handleTouchStart,
         onTouchMove: this.handleTouchMove,
         onTouchEnd: this.handleTouchEnd,
+        onMouseDown: this.handleMouseDown,
+        onMouseUp: this.handleMouseUp,
+        onMouseOut: this.handleMouseOut,
+        onMouseMove: this.handleMouseMove,
         onTouchCancel: this.handleTouchEnd
       },
       items
@@ -81,6 +85,37 @@ class ListView extends Component {
   };
 
   handleTouchEnd = e => {
+    this.handleScrollRelease(e);
+  };
+
+  handleMouseDown = e => {
+    //if (e.button !== 2) return;
+
+    if (this.scroller) {
+      this.scroller.doTouchStart([e], e.timeStamp);
+    }
+  };
+
+  handleMouseMove = e => {
+    if (this.scroller) {
+      e.preventDefault();
+      this.scroller.doTouchMove([e], e.timeStamp);
+    }
+  };
+
+  handleMouseUp = e => {
+    //if (e.button !== 2) return;
+
+    this.handleScrollRelease(e);
+  };
+
+  handleMouseOut = e => {
+    //if (e.button !== 2) return;
+
+    this.handleScrollRelease(e);
+  };
+
+  handleScrollRelease = e => {
     if (this.scroller) {
       this.scroller.doTouchEnd(e.timeStamp);
       if (this.props.snapping) {

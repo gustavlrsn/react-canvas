@@ -83,7 +83,10 @@ class Item extends React.Component {
 
   render() {
     return (
-      <Group style={this.getStyle()}>
+      <Group
+        style={this.getStyle()}
+        onClick={() => console.log("Clicked " + this.props.title)}
+      >
         <Image style={this.getImageStyle()} src={this.props.imageUrl} />
         <Text style={this.getTitleStyle()}>{this.props.title}</Text>
       </Group>
@@ -164,8 +167,8 @@ class App extends React.Component {
     return {
       top: 0,
       left: 0,
-      width: window.innerWidth,
-      height: window.innerHeight
+      width: this.getSize().width,
+      height: this.getSize().height
     };
   };
 

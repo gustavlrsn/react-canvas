@@ -98,10 +98,12 @@ const CanvasHostConfig = {
       const parentLayer = parentInstance.getLayer();
 
       if (childLayer.parentLayer === parentLayer) {
-        childLayer.eject();
+        childLayer.moveToTop();
+      } else {
+        childLayer.inject(parentLayer);
       }
 
-      childLayer.inject(parentLayer);
+      parentLayer.invalidateLayout();
     },
 
     appendChildToContainer(parentInstance, child) {
@@ -109,36 +111,32 @@ const CanvasHostConfig = {
       const parentLayer = parentInstance.getLayer();
 
       if (childLayer.parentLayer === parentLayer) {
-        childLayer.eject();
+        childLayer.moveToTop();
+      } else {
+        childLayer.inject(parentLayer);
       }
 
-      childLayer.inject(parentLayer);
+      parentLayer.invalidateLayout();
     },
 
     insertBefore(parentInstance, child, beforeChild) {
-      invariant(
-        child.getLayer() !== beforeChild.getLayer(),
-        "ReactART: Can not insert node before itself"
-      );
-      child.getLayer().injectBefore(beforeChild.getLayer());
+      const parentLayer = parentInstance.getLayer();
+      child.getLayer().injectBefore(parentLayer, beforeChild.getLayer());
     },
 
     insertInContainerBefore(parentInstance, child, beforeChild) {
-      invariant(
-        child.getLayer() !== beforeChild.getLayer(),
-        "ReactART: Can not insert node before itself"
-      );
-      child.getLayer().injectBefore(beforeChild.getLayer());
+      const parentLayer = parentInstance.getLayer();
+      child.getLayer().injectBefore(parentLayer, beforeChild.getLayer());
     },
 
     removeChild(parentInstance, child) {
       child.destroyEventListeners();
-      child.getLayer().eject();
+      child.getLayer().remove();
     },
 
     removeChildFromContainer(parentInstance, child) {
       child.destroyEventListeners();
-      child.getLayer().eject();
+      child.getLayer().remove();
     },
 
     commitTextUpdate(/*textInstance, oldText, newText*/) {
