@@ -8,6 +8,10 @@ class App extends React.Component {
     window.addEventListener("resize", this.handleResize, true);
   }
 
+  componentWillUnmount() {
+    this._unmounted = true;
+  }
+
   render() {
     const size = this.getSize();
 
@@ -49,7 +53,7 @@ class App extends React.Component {
   // ======
 
   getSize = () => {
-    return { width: window.innerWidth - 200, height: window.innerHeight - 200 };
+    return { width: window.innerWidth - 30, height: window.innerHeight - 30 };
   };
 
   getPageStyle = () => {
@@ -109,7 +113,9 @@ class App extends React.Component {
   // ======
 
   handleResize = () => {
-    this.forceUpdate();
+    if (!this._unmounted) {
+      this.forceUpdate();
+    }
   };
 }
 

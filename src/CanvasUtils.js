@@ -137,7 +137,7 @@ function drawText(ctx, text, x, y, width, height, fontFace, _options) {
   ctx.fillStyle = options.color;
   ctx.font =
     fontFace.attributes.style +
-    " " +
+    " normal " +
     fontFace.attributes.weight +
     " " +
     options.fontSize +

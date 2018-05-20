@@ -58,7 +58,7 @@ export default function measureText(
     fontFace.attributes.weight +
     " " +
     fontSize +
-    "pt " +
+    "px " +
     fontFace.family;
   textMetrics = ctx.measureText(text);
 
