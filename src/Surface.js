@@ -76,7 +76,7 @@ class Surface extends React.Component {
   };
 
   componentWillUnmount = () => {
-    // TODO destroy event listeners recursively
+    CanvasRenderer.updateContainer(null, this.mountNode, this);
   };
 
   componentDidUpdate = prevProps => {
