@@ -116,12 +116,10 @@ RenderLayer.prototype = {
 
   /**
    * @param {String} type
-   * @param {Function} callback
-   * @param {?Object} callbackScope
    */
-  addEventListener: function(type) {
+  destroyEventListeners: function() {
     for (const eventType in EventTypes) {
-      if (EventTypes[eventType] === type) {
+      if (this[eventType]) {
         delete this[eventType];
       }
     }

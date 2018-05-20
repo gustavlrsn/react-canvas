@@ -9,13 +9,8 @@ export default class CanvasComponent {
     this.subscriptions = null;
     this.listeners = null;
     this.node = new RenderLayer();
-    this._currentElement = null;
     this._layerId = LAYER_GUID++;
   }
-
-  construct = element => {
-    this._currentElement = element;
-  };
 
   putEventListener = (type, listener) => {
     const subscriptions = this.subscriptions || (this.subscriptions = {});
@@ -33,12 +28,10 @@ export default class CanvasComponent {
     }
   };
 
-  handleEvent = () => {
-    // TODO
-  };
-
   destroyEventListeners = () => {
-    // TODO
+    this.listeners = null;
+    this.subscriptions = null;
+    this.node.destroyEventListeners();
   };
 
   applyCommonLayerProps = (prevProps, props) => {
