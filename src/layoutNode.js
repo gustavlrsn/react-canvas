@@ -1,6 +1,4 @@
-"use strict";
-
-import computeLayout from "./Layout";
+import computeLayout from "css-layout";
 
 function createNode(layer) {
   return {
