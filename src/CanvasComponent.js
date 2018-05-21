@@ -75,13 +75,6 @@ export default class CanvasComponent {
     }
   };
 
-  mountComponentIntoNode = () => {
-    throw new Error(
-      "You cannot render a Canvas component standalone. " +
-        "You need to wrap it in a Surface."
-    );
-  };
-
   getLayer = () => this.node;
 
   /**

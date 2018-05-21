@@ -87,10 +87,10 @@ export default class Image extends React.Component {
     style.backgroundColor = imageStyle.backgroundColor = null;
     backgroundStyle.alpha = clamp(1 - this.state.imageAlpha, 0, 1);
 
-    // TODO background
-    // <Layer ref={this.setBackgroundRef} style={backgroundStyle}/>
     return (
       <Group ref={this.setGroupRef} style={style}>
+        <Group style={backgroundStyle} />
+
         <RawImageName
           ref={this.setRawImageRef}
           src={this.props.src}

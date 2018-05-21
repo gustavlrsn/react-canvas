@@ -293,7 +293,8 @@ function drawGradientRenderLayer(ctx, layer) {
 const layerTypesToDrawFunction = {
   image: drawImageRenderLayer,
   text: drawTextRenderLayer,
-  gradient: drawGradientRenderLayer
+  gradient: drawGradientRenderLayer,
+  group: drawBaseRenderLayer
 };
 
 function getDrawFunction(type) {
