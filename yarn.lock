@@ -5659,6 +5659,10 @@ map-cache@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/map-cache/-/map-cache-0.2.2.tgz#c32abd0bd6525d9b051645bb4f26ac5dc98a0dbf"
 
+map-or-similar@^1.1.3:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/map-or-similar/-/map-or-similar-1.5.0.tgz#6de2653174adfb5d9edc33c69d3e92a1b76faf08"
+
 map-visit@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/map-visit/-/map-visit-1.0.0.tgz#ecdca8f13144e660f1b5bd41f12f3479d98dfb8f"
@@ -5924,6 +5928,12 @@ ms@2.0.0:
 ms@2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
+
+multi-key-cache@^1.0.2:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/multi-key-cache/-/multi-key-cache-1.0.2.tgz#4107c5f2b58f335a01735099ad34652dbbde579e"
+  dependencies:
+    map-or-similar "^1.1.3"
 
 multimatch@^2.0.0:
   version "2.1.0"
@@ -7164,10 +7174,6 @@ react-reconciler@^0.10.0:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.0"
-
-react-scheduler@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/react-scheduler/-/react-scheduler-0.1.0.tgz#d16c0ee90d2895ff1941e0d681293dbe4f4b4f38"
 
 react-split-pane@^0.1.77:
   version "0.1.77"

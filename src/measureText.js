@@ -1,19 +1,16 @@
 import { isFontLoaded } from "./FontUtils";
 import LineBreaker from "@craigmorton/linebreak";
+import MultiKeyCache from "multi-key-cache";
 
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 
-const _cache = {};
+const _cache = new MultiKeyCache();
 const _zeroMetrics = {
   width: 0,
   height: 0,
   lines: []
 };
-
-function getCacheKey(text, width, fontFace, fontSize, lineHeight) {
-  return text + width + fontFace.id + fontSize + lineHeight;
-}
 
 /**
  * Given a string of text, available width, and font return the measured width
@@ -32,8 +29,8 @@ export default function measureText(
   fontSize,
   lineHeight
 ) {
-  const cacheKey = getCacheKey(text, width, fontFace, fontSize, lineHeight);
-  const cached = _cache[cacheKey];
+  const cacheKey = [text, width, fontFace.id, fontSize, lineHeight];
+  const cached = _cache.get(cacheKey);
   if (cached) {
     return cached;
   }
@@ -103,7 +100,7 @@ export default function measureText(
     }
   }
 
-  _cache[cacheKey] = measuredSize;
+  _cache.set(cacheKey, measuredSize);
 
   return measuredSize;
 }

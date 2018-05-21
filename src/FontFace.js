@@ -1,20 +1,18 @@
-"use strict";
-
-const _fontFaces = {};
+import MultiKeyCache from "multi-key-cache";
+const _fontFaces = new MultiKeyCache();
 
 /**
  * @internal
  */
 function getCacheKey(family, url, attributes) {
-  return (
-    family +
-    url +
-    Object.keys(attributes)
-      .sort()
-      .map(function(key) {
-        return attributes[key];
-      })
-  );
+  const cacheKey = [family, url];
+
+  for (const entry of Object.entries(attributes)) {
+    cacheKey.push(entry[0]);
+    cacheKey.push(entry[1]);
+  }
+
+  return cacheKey;
 }
 
 /**
@@ -30,16 +28,16 @@ function FontFace(family, url, attributes) {
   attributes.style = attributes.style || "normal";
   attributes.weight = attributes.weight || 400;
 
-  const fontId = getCacheKey(family, url, attributes);
-  fontFace = _fontFaces[fontId];
+  const cacheKey = getCacheKey(family, url, attributes);
+  fontFace = _fontFaces.get(cacheKey);
 
   if (!fontFace) {
     fontFace = {};
-    fontFace.id = fontId;
+    fontFace.id = JSON.stringify(cacheKey);
     fontFace.family = family;
     fontFace.url = url;
     fontFace.attributes = attributes;
-    _fontFaces[fontId] = fontFace;
+    _fontFaces.set(cacheKey, fontFace);
   }
 
   return fontFace;
