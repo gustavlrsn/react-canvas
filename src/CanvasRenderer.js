@@ -7,15 +7,47 @@ import Group from "./Group";
 import { RawImage } from "./Image";
 import ReactDOMFrameScheduling from "./ReactDOMFrameScheduling";
 import ReactFiberReconciler from "react-reconciler";
+import CanvasComponent from "./CanvasComponent";
 import { getClosestInstanceFromNode } from "./ReactDOMComponentTree";
 
 const UPDATE_SIGNAL = {};
+const MAX_POOLED_COMPONENTS_PER_TYPE = 1024;
 
-const ctors = {
+const componentConstructors = {
   Gradient: Gradient,
   Text: Text,
   Group: Group,
   RawImage: RawImage
+};
+
+const componentPool = {};
+
+const freeComponentToPool = component => {
+  const type = component.type;
+
+  if (!(component.type in componentPool)) {
+    componentPool[type] = [];
+  }
+
+  const pool = componentPool[type];
+
+  if (pool.length < MAX_POOLED_COMPONENTS_PER_TYPE) {
+    pool.push(component);
+  }
+};
+
+const freeComponentAndChildren = c => {
+  if (!(c instanceof CanvasComponent)) return;
+
+  const children = c.getLayer().children;
+
+  for (let i = 0; i < children.length; i++) {
+    const childLayer = children[i];
+    freeComponentAndChildren(childLayer.component);
+  }
+
+  c.reset();
+  freeComponentToPool(c);
 };
 
 const CanvasHostConfig = {
@@ -30,7 +62,15 @@ const CanvasHostConfig = {
   },
 
   createInstance(type, props /*, internalInstanceHandle*/) {
-    const instance = new ctors[type](props);
+    let instance;
+
+    const pool = componentPool[type];
+
+    if (pool && pool.length > 0) {
+      instance = componentPool[type].pop();
+    } else {
+      instance = new componentConstructors[type](type);
+    }
 
     if (typeof instance.applyLayerProps !== "undefined") {
       instance.applyLayerProps({}, props);
@@ -135,15 +175,15 @@ const CanvasHostConfig = {
 
     removeChild(parentInstance, child) {
       const parentLayer = parentInstance.getLayer();
-      child.destroyEventListeners();
       child.getLayer().remove();
+      freeComponentAndChildren(child);
       parentLayer.invalidateLayout();
     },
 
     removeChildFromContainer(parentInstance, child) {
       const parentLayer = parentInstance.getLayer();
-      child.destroyEventListeners();
       child.getLayer().remove();
+      freeComponentAndChildren(child);
       parentLayer.invalidateLayout();
     },
 
@@ -177,7 +217,7 @@ CanvasRenderer.injectIntoDevTools({
 });
 
 CanvasRenderer.registerComponentConstructor = (name, ctor) => {
-  ctors[name] = ctor;
+  componentConstructors[name] = ctor;
 };
 
 export default CanvasRenderer;

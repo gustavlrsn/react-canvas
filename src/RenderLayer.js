@@ -2,12 +2,27 @@ import { zero } from "./FrameUtils";
 import { invalidateBackingStore } from "./DrawingUtils";
 import * as EventTypes from "./EventTypes";
 
-function RenderLayer() {
-  this.children = [];
-  this.frame = zero();
+function RenderLayer(component) {
+  this.reset(component);
 }
 
 RenderLayer.prototype = {
+  /**
+   * Resets all the state on this RenderLayer so it can be added to a pool for re-use.
+   *
+   * @return {RenderLayer}
+   */
+  reset: function(component) {
+    for (const [key, value] of Object.entries(this)) {
+      if (typeof value === "function") continue;
+      this[key] = null;
+    }
+
+    this.children = [];
+    this.frame = zero();
+    this.component = component;
+  },
+
   /**
    * Retrieve the root injection layer
    *

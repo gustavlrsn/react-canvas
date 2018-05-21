@@ -5,10 +5,11 @@ import * as EventTypes from "./EventTypes";
 let LAYER_GUID = 0;
 
 export default class CanvasComponent {
-  constructor() {
+  constructor(type) {
+    this.type = type;
     this.subscriptions = null;
     this.listeners = null;
-    this.node = new RenderLayer();
+    this.node = new RenderLayer(this);
     this._layerId = LAYER_GUID++;
   }
 
@@ -81,10 +82,16 @@ export default class CanvasComponent {
     );
   };
 
-  unmountComponent = () => {
-    console.log("Unmount canvas component");
-    this.destroyEventListeners();
-  };
-
   getLayer = () => this.node;
+
+  /**
+   * Resets all the state on this CanvasComponent so it can be added to a pool for re-use.
+   *
+   * @return {RenderLayer}
+   */
+  reset = () => {
+    this.destroyEventListeners();
+    this._originalStyle = null;
+    this.node.reset(this);
+  };
 }

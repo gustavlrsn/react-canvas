@@ -47,6 +47,7 @@ export default class Image extends React.Component {
   componentWillUnmount() {
     if (this._pendingAnimationFrame) {
       cancelAnimationFrame(this._pendingAnimationFrame);
+      this._pendingAnimationFrame = null;
     }
     ImageCache.get(this.props.src).removeListener("load", this.handleImageLoad);
   }
