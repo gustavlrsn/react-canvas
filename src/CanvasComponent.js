@@ -1,6 +1,7 @@
 import RenderLayer from "./RenderLayer";
 import { make } from "./FrameUtils";
 import * as EventTypes from "./EventTypes";
+import emptyObject from "fbjs/lib/emptyObject";
 
 let LAYER_GUID = 0;
 
@@ -16,7 +17,11 @@ export default class CanvasComponent {
   putEventListener = (type, listener) => {
     const subscriptions = this.subscriptions || (this.subscriptions = {});
     const listeners = this.listeners || (this.listeners = {});
-    listeners[type] = listener;
+
+    if (listeners[type] !== listener) {
+      listeners[type] = listener;
+    }
+
     if (listener) {
       if (!subscriptions[type]) {
         subscriptions[type] = this.node.subscribe(type, listener, this);
@@ -37,8 +42,14 @@ export default class CanvasComponent {
 
   applyCommonLayerProps = (prevProps, props) => {
     const layer = this.node;
-    const style = props && props.style ? props.style : {};
-    layer._originalStyle = style;
+
+    layer._originalStyle = null;
+    let style = emptyObject;
+
+    if (props && props.style) {
+      style = props.style;
+      layer._originalStyle = style;
+    }
 
     // Common layer properties
     layer.alpha = style.alpha;
@@ -47,12 +58,15 @@ export default class CanvasComponent {
     layer.borderWidth = style.borderWidth;
     layer.borderRadius = style.borderRadius;
     layer.clipRect = style.clipRect;
-    layer.frame = make(
-      style.left || 0,
-      style.top || 0,
-      style.width || 0,
-      style.height || 0
-    );
+
+    if (!layer.frame) {
+      layer.frame = make(0, 0, 0, 0);
+    }
+
+    layer.frame.x = style.left || 0;
+    layer.frame.y = style.top || 0;
+    layer.frame.width = style.width || 0;
+    layer.frame.height = style.height || 0;
     layer.scale = style.scale;
     layer.translateX = style.translateX;
     layer.translateY = style.translateY;

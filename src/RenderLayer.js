@@ -13,13 +13,30 @@ RenderLayer.prototype = {
    * @return {RenderLayer}
    */
   reset: function(component) {
-    for (const [key, value] of Object.entries(this)) {
+    for (const key in this) {
+      if (key === "children" || key === "frame" || key === "component")
+        continue;
+      const value = this[key];
+
       if (typeof value === "function") continue;
       this[key] = null;
     }
 
-    this.children = [];
-    this.frame = zero();
+    if (this.children) {
+      this.children.length = 0;
+    } else {
+      this.children = [];
+    }
+
+    if (this.frame) {
+      this.frame.x = null;
+      this.frame.y = null;
+      this.frame.width = null;
+      this.frame.height = null;
+    } else {
+      this.frame = zero();
+    }
+
     this.component = component;
   },
 

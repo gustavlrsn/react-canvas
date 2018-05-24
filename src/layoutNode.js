@@ -1,4 +1,5 @@
 import computeLayout from "css-layout";
+import emptyObject from "fbjs/lib/emptyObject";
 
 function createNode(layer) {
   return {
@@ -9,7 +10,8 @@ function createNode(layer) {
       top: 0,
       left: 0
     },
-    style: layer._originalStyle || {},
+    style: layer._originalStyle || emptyObject,
+    // TODO no need to layout children that have non-dirty backing store
     children: (layer.children || []).map(createNode)
   };
 }
