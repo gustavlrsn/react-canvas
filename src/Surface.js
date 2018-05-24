@@ -102,6 +102,10 @@ class Surface extends React.Component {
   };
 
   render() {
+    if (this.props.canvas) {
+      return null;
+    }
+
     // Scale the drawing area to match DPI.
     const width = this.props.width * this.props.scale;
     const height = this.props.height * this.props.scale;
