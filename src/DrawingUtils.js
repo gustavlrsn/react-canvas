@@ -319,6 +319,35 @@ function sortByZIndexAscending(layerA, layerB) {
 }
 
 let drawCacheableRenderLayer = null;
+let drawRenderLayer = null;
+
+function drawChildren(layer, ctx) {
+  const children = layer.children;
+  if (children.length === 0) return;
+
+  // Opimization
+  if (children.length === 1) {
+    drawRenderLayer(ctx, children[0]);
+  } else if (children.length === 2) {
+    const c0 = children[0];
+    const c1 = children[1];
+
+    if (c0.zIndex < c1.zIndex) {
+      drawRenderLayer(ctx, c0);
+      drawRenderLayer(ctx, c1);
+    } else {
+      drawRenderLayer(ctx, c1);
+      drawRenderLayer(ctx, c0);
+    }
+  } else {
+    children
+      .slice()
+      .sort(sortByZIndexAscending)
+      .forEach(function(childLayer) {
+        drawRenderLayer(ctx, childLayer);
+      });
+  }
+}
 
 /**
  * Draw a RenderLayer instance to a <canvas> context.
@@ -326,7 +355,7 @@ let drawCacheableRenderLayer = null;
  * @param {CanvasRenderingContext2d} ctx
  * @param {RenderLayer} layer
  */
-function drawRenderLayer(ctx, layer) {
+drawRenderLayer = (ctx, layer) => {
   const drawFunction = getDrawFunction(layer.type);
 
   // Performance: avoid drawing hidden layers.
@@ -368,12 +397,7 @@ function drawRenderLayer(ctx, layer) {
 
     // Draw child layers, sorted by their z-index.
     if (layer.children) {
-      layer.children
-        .slice()
-        .sort(sortByZIndexAscending)
-        .forEach(function(childLayer) {
-          drawRenderLayer(ctx, childLayer);
-        });
+      drawChildren(layer, ctx);
     }
   }
 
@@ -444,12 +468,7 @@ drawCacheableRenderLayer = (ctx, layer, drawFunction) => {
 
     // Draw child layers, sorted by their z-index.
     if (layer.children) {
-      layer.children
-        .slice()
-        .sort(sortByZIndexAscending)
-        .forEach(function(childLayer) {
-          drawRenderLayer(backingContext, childLayer);
-        });
+      drawChildren(layer, backingContext);
     }
 
     // Restore layer's original frame.

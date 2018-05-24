@@ -8,35 +8,36 @@ let LAYER_GUID = 0;
 export default class CanvasComponent {
   constructor(type) {
     this.type = type;
-    this.subscriptions = null;
-    this.listeners = null;
+    this.subscriptions = new Map();
+    this.listeners = new Map();
     this.node = new RenderLayer(this);
     this._layerId = LAYER_GUID++;
   }
 
   putEventListener = (type, listener) => {
-    const subscriptions = this.subscriptions || (this.subscriptions = {});
-    const listeners = this.listeners || (this.listeners = {});
+    const subscriptions = this.subscriptions;
+    const listeners = this.listeners;
 
-    if (listeners[type] !== listener) {
-      listeners[type] = listener;
+    if (listeners.get(type) !== listener) {
+      listeners.set(type, listener);
     }
 
     if (listener) {
-      if (!subscriptions[type]) {
-        subscriptions[type] = this.node.subscribe(type, listener, this);
+      if (!subscriptions.has(type)) {
+        subscriptions.set(type, this.node.subscribe(type, listener, this));
       }
     } else {
-      if (subscriptions[type]) {
-        subscriptions[type]();
-        delete subscriptions[type];
+      const subscription = subscriptions.get(type);
+      if (subscription) {
+        subscription();
+        subscriptions.delete(type);
       }
     }
   };
 
   destroyEventListeners = () => {
-    this.listeners = null;
-    this.subscriptions = null;
+    this.listeners.clear();
+    this.subscriptions.clear();
     this.node.destroyEventListeners();
   };
 

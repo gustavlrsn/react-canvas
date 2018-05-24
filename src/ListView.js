@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import Scroller from "scroller";
 import Core from "./Core";
 const { Group } = Core;
+const MAX_CACHED_ITEMS = 100;
 
 class ListView extends Component {
   static propTypes = {
@@ -29,12 +30,24 @@ class ListView extends Component {
     scrollTop: 0
   };
 
+  constructor(props) {
+    super(props);
+
+    this._itemCache = new Map();
+    this._groupCache = new Map();
+  }
+
   componentDidMount() {
     this.createScroller();
     this.updateScrollingDimensions();
   }
 
   render() {
+    if (this._itemCache.size > MAX_CACHED_ITEMS) {
+      this._itemCache.clear();
+      this._groupCache.clear();
+    }
+
     const items = this.getVisibleItemIndexes().map(this.renderItem);
     return React.createElement(
       Group,
@@ -55,17 +68,41 @@ class ListView extends Component {
 
   renderItem = itemIndex => {
     const item = this.props.itemGetter(itemIndex, this.state.scrollTop);
+    const priorItem = this._itemCache.get(itemIndex);
     const itemHeight = this.props.itemHeightGetter();
-    const style = {
-      top: 0,
-      left: 0,
-      width: this.props.style.width,
-      height: itemHeight,
-      translateY: itemIndex * itemHeight - this.state.scrollTop,
-      zIndex: itemIndex
-    };
 
-    return React.createElement(Group, { style: style, key: itemIndex }, item);
+    let group;
+
+    if (item === priorItem) {
+      // Item hasn't changed, we can re-use the previous Group element after adjusting style.
+      group = this._groupCache.get(itemIndex);
+    } else {
+      group = React.createElement(
+        Group,
+        {
+          style: { top: 0, left: 0, zIndex: itemIndex },
+          useBackingStore: true,
+          key: itemIndex
+        },
+        item
+      );
+
+      this._itemCache.set(itemIndex, item);
+      this._groupCache.set(itemIndex, group);
+    }
+
+    if (group.props.style.width !== this.props.style.width) {
+      group.props.style.width = this.props.style.width;
+    }
+
+    if (group.props.style.height !== itemHeight) {
+      group.props.style.height = itemHeight;
+    }
+
+    group.props.style.translateY =
+      itemIndex * itemHeight - this.state.scrollTop;
+
+    return group;
   };
 
   // Events

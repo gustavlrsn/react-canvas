@@ -13,6 +13,10 @@ RenderLayer.prototype = {
    * @return {RenderLayer}
    */
   reset: function(component) {
+    if (this.backingStoreId) {
+      invalidateBackingStore(this.backingStoreId);
+    }
+
     for (const key in this) {
       if (key === "children" || key === "frame" || key === "component")
         continue;
