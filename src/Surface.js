@@ -27,7 +27,8 @@ class Surface extends React.Component {
     scale: PropTypes.number.isRequired,
     enableCSSLayout: PropTypes.bool,
     children: PropTypes.object,
-    style: PropTypes.object
+    style: PropTypes.object,
+    canvas: PropTypes.object
   };
 
   static defaultProps = {
@@ -39,6 +40,14 @@ class Surface extends React.Component {
   setCanvasRef = canvas => {
     this.canvas = canvas;
   };
+
+  constructor(props) {
+    super(props);
+
+    if (props.canvas) {
+      this.setCanvasRef(props.canvas);
+    }
+  }
 
   componentDidMount = () => {
     // Prepare the <canvas> for drawing.

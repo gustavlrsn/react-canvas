@@ -1,7 +1,6 @@
 import React from "react";
 import { storiesOf } from "@storybook/react";
-import ReactCanvas from "../src/index";
-const { Gradient, Text, Group, Image, Surface } = ReactCanvas;
+import { Gradient, Text, Group, Image, Surface } from "../index";
 
 storiesOf("Gradient", module)
   .add("transparent-grey", () => {
