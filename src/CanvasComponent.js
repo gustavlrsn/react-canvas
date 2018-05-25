@@ -3,7 +3,7 @@ import { make } from "./FrameUtils";
 import * as EventTypes from "./EventTypes";
 import emptyObject from "fbjs/lib/emptyObject";
 
-let LAYER_GUID = 0;
+let LAYER_GUID = 1;
 
 export default class CanvasComponent {
   constructor(type) {
@@ -115,6 +115,8 @@ export default class CanvasComponent {
     // Generate backing store ID as needed.
     if (props.useBackingStore && layer.backingStoreId !== this._layerId) {
       layer.backingStoreId = this._layerId;
+    } else if (!props.useBackingStore && layer.backingStoreId) {
+      layer.backingStoreId = null;
     }
 
     // Register events
