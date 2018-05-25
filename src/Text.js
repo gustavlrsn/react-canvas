@@ -23,12 +23,16 @@ function textArraysEqual(a, b) {
   return true;
 }
 
+const LAYER_TYPE = "text";
+
 class Text extends CanvasComponent {
   applyLayerProps = (prevProps, props) => {
     const style = props && props.style ? props.style : {};
     const layer = this.node;
 
-    layer.type = "text";
+    if (layer.type !== LAYER_TYPE) {
+      layer.type = LAYER_TYPE;
+    }
 
     if (
       layer.text === null ||
@@ -37,11 +41,16 @@ class Text extends CanvasComponent {
       layer.text = childrenAsString(props.children);
     }
 
-    layer.color = style.color;
-    layer.fontFace = style.fontFace;
-    layer.fontSize = style.fontSize;
-    layer.lineHeight = style.lineHeight;
-    layer.textAlign = style.textAlign;
+    if (layer.color !== style.color) layer.color = style.color;
+
+    if (layer.fontFace !== style.fontFace) layer.fontFace = style.fontFace;
+
+    if (layer.fontSize !== style.fontSize) layer.fontSize = style.fontSize;
+
+    if (layer.lineHeight !== style.lineHeight)
+      layer.lineHeight = style.lineHeight;
+
+    if (layer.textAlign !== style.textAlign) layer.textAlign = style.textAlign;
 
     this.applyCommonLayerProps(prevProps, props);
   };

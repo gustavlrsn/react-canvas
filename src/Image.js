@@ -11,12 +11,20 @@ const { Group } = Core;
 
 const FADE_DURATION = 200;
 
+const LAYER_TYPE = "image";
+
 export class RawImage extends CanvasComponent {
   applyLayerProps = (prevProps, props) => {
     const layer = this.node;
 
-    layer.type = "image";
-    layer.imageUrl = props.src;
+    if (layer.type !== LAYER_TYPE) {
+      layer.type = LAYER_TYPE;
+    }
+
+    if (layer.imageUrl !== props.src) {
+      layer.imageUrl = props.src;
+    }
+
     this.applyCommonLayerProps(prevProps, props);
   };
 }
