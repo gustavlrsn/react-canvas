@@ -41,53 +41,90 @@ export default class CanvasComponent {
     this.node.destroyEventListeners();
   };
 
-  applyCommonLayerProps = (prevProps, props) => {
-    const layer = this.node;
-
-    layer._originalStyle = null;
+  setStyleFromProps = (layer, props) => {
     let style = emptyObject;
 
-    if (props && props.style) {
+    if (props.style) {
       style = props.style;
       layer._originalStyle = style;
+    } else {
+      layer._originalStyle = null;
     }
-
-    // Common layer properties
-    layer.alpha = style.alpha;
-    layer.backgroundColor = style.backgroundColor;
-    layer.borderColor = style.borderColor;
-    layer.borderWidth = style.borderWidth;
-    layer.borderRadius = style.borderRadius;
-    layer.clipRect = style.clipRect;
 
     if (!layer.frame) {
       layer.frame = make(0, 0, 0, 0);
     }
 
-    layer.frame.x = style.left || 0;
-    layer.frame.y = style.top || 0;
-    layer.frame.width = style.width || 0;
-    layer.frame.height = style.height || 0;
-    layer.scale = style.scale;
-    layer.translateX = style.translateX;
-    layer.translateY = style.translateY;
-    layer.zIndex = style.zIndex;
+    const frame = layer.frame;
+    const l = style.left || 0;
+    const t = style.top || 0;
+    const w = style.width || 0;
+    const h = style.height || 0;
+
+    if (frame.x !== l) frame.x = l;
+    if (frame.y !== t) frame.y = t;
+    if (frame.width !== w) frame.width = w;
+    if (frame.height !== h) frame.height = h;
+
+    // Common layer properties
+    if (layer.alpha !== style.alpha) layer.alpha = style.alpha;
+
+    if (layer.backgroundColor !== style.backgroundColor)
+      layer.backgroundColor = style.backgroundColor;
+
+    if (layer.borderColor !== style.borderColor)
+      layer.borderColor = style.borderColor;
+
+    if (layer.borderWidth !== style.borderWidth)
+      layer.borderWidth = style.borderWidth;
+
+    if (layer.borderRadius !== style.borderRadius)
+      layer.borderRadius = style.borderRadius;
+
+    if (layer.clipRect !== style.clipRect) layer.clipRect = style.clipRect;
+
+    if (layer.scale !== style.scale) layer.scale = style.scale;
+
+    if (
+      layer.translateX !== style.translateX ||
+      layer.translateY !== style.translateY
+    ) {
+      layer.translateX = style.translateX;
+      layer.translateY = style.translateY;
+    }
+
+    if (layer.zIndex !== style.zIndex) layer.zIndex = style.zIndex;
 
     // Shadow
-    layer.shadowColor = style.shadowColor;
-    layer.shadowBlur = style.shadowBlur;
-    layer.shadowOffsetX = style.shadowOffsetX;
-    layer.shadowOffsetY = style.shadowOffsetY;
+    if (layer.shadowColor !== style.shadowColor)
+      layer.shadowColor = style.shadowColor;
+
+    if (layer.shadowBlur !== style.shadowBlur)
+      layer.shadowBlur = style.shadowBlur;
+
+    if (layer.shadowOffsetX !== style.shadowOffsetX)
+      layer.shadowOffsetX = style.shadowOffsetX;
+
+    if (layer.shadowOffsetY !== style.shadowOffsetY)
+      layer.shadowOffsetY = style.shadowOffsetY;
+  };
+
+  applyCommonLayerProps = (prevProps, props) => {
+    const layer = this.node;
 
     // Generate backing store ID as needed.
-    if (props.useBackingStore) {
+    if (props.useBackingStore && layer.backingStoreId !== this._layerId) {
       layer.backingStoreId = this._layerId;
     }
 
     // Register events
     for (const type in EventTypes) {
-      this.putEventListener(EventTypes[type], props[type]);
+      if (prevProps[type] !== props[type]) {
+        this.putEventListener(EventTypes[type], props[type]);
+      }
     }
+
+    this.setStyleFromProps(layer, props);
   };
 
   getLayer = () => this.node;
