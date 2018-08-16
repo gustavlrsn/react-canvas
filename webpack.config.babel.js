@@ -22,8 +22,7 @@ const config = {
           query: {
             plugins: [
               "transform-class-properties",
-              "transform-object-rest-spread",
-              "transform-decorators-legacy"
+              "transform-object-rest-spread"
             ]
           }
         }
