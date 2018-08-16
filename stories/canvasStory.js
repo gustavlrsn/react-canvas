@@ -1,6 +1,6 @@
 import React from "react";
 import { storiesOf } from "@storybook/react";
-import { Gradient, Text, Group, Image, Surface } from "../index";
+import { Gradient, Text, Group, Image, Surface } from "../src/index";
 
 storiesOf("Gradient", module)
   .add("transparent-grey", () => {
