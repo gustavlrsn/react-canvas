@@ -47,7 +47,6 @@
   },
   "dependencies": {
     "@craigmorton/linebreak": "^0.4.5",
-    "create-react-class": "^15.6.0",
     "css-layout": "^1.1.1",
     "fbjs": "^0.8.16",
     "multi-key-cache": "^1.0.2",
