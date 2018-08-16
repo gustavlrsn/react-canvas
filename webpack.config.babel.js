@@ -18,13 +18,7 @@ const config = {
         test: /\.js$/,
         exclude: /(node_modules)/,
         use: {
-          loader: "babel-loader",
-          query: {
-            plugins: [
-              "transform-class-properties",
-              "transform-object-rest-spread"
-            ]
-          }
+          loader: "babel-loader"
         }
       }
     ]
