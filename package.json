@@ -10,7 +10,8 @@
   "scripts": {
     "build": "rimraf dist && babel src --out-dir dist",
     "storybook": "start-storybook -p 6006 -c .storybook",
-    "build-storybook": "build-storybook -c .storybook"
+    "build-storybook": "build-storybook -c .storybook",
+    "prepare": "yarn build"
   },
   "keywords": [
     "react",
