@@ -26,7 +26,7 @@ class Surface extends React.Component {
     height: PropTypes.number.isRequired,
     scale: PropTypes.number.isRequired,
     enableCSSLayout: PropTypes.bool,
-    children: PropTypes.object,
+    children: PropTypes.node,
     style: PropTypes.object,
     canvas: PropTypes.object
   };
