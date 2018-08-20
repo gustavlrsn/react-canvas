@@ -44,4 +44,19 @@ const ReactCanvas = {
   registerCustomComponent
 };
 
+export const Text = ReactCanvas.Text;
+export const Group = ReactCanvas.Group;
+export const Gradient = ReactCanvas.Gradient;
+export const Layer = ReactCanvas.Layer;
+
+export {
+  Surface,
+  Image,
+  ListView,
+  FontFace,
+  FrameUtils,
+  measureText,
+  registerCustomComponent
+};
+
 export default ReactCanvas;

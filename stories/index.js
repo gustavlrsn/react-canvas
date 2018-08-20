@@ -1,6 +1,8 @@
-import "./canvasStory";
-import "./listviewStory";
-import "./customDrawStory";
-import "./heatmapStory";
-import "./timeline";
-import "./csslayout";
+import "./Image";
+import "./Gradient";
+import "./Text";
+import "./Listview";
+import "./CustomDraw";
+import "./Heatmap";
+import "./Timeline";
+import "./CSS";

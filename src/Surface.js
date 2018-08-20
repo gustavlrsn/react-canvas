@@ -26,7 +26,7 @@ class Surface extends React.Component {
     height: PropTypes.number.isRequired,
     scale: PropTypes.number.isRequired,
     enableCSSLayout: PropTypes.bool,
-    children: PropTypes.object,
+    children: PropTypes.node,
     style: PropTypes.object,
     canvas: PropTypes.object
   };
@@ -176,7 +176,8 @@ class Surface extends React.Component {
   afterTick = () => {
     // Execute pending draw that may have been scheduled during previous frame
     this._frameReady = true;
-    if (this._pendingTick) {
+    // canvas might be already removed from DOM
+    if (this._pendingTick && this.canvas) {
       this._pendingTick = false;
       this.batchedTick();
     }
