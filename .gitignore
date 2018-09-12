@@ -3,3 +3,4 @@ npm-debug.log
 .idea
 storybook-static
 dist
+yarn-error.log
