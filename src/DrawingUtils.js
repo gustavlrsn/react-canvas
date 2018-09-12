@@ -405,7 +405,7 @@ drawRenderLayer = (ctx, layer) => {
   if (saveContext) {
     ctx.restore();
   }
-}
+};
 
 /**
  * Draw a bitmap-cacheable layer into a pooled <canvas>. The result will be
