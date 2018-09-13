@@ -83,7 +83,7 @@ RenderLayer.prototype = {
     const beforeIndex = parentLayer.children.indexOf(beforeLayer);
     parentLayer.children.splice(beforeIndex, 0, this);
     this.parentLayer = parentLayer;
-    this.zIndex = beforeLayer.zIndex || 0;
+    this.zIndex = this.zIndex || beforeLayer.zIndex || 0;
   },
 
   /**
