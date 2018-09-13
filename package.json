@@ -42,7 +42,13 @@
     "eslint-plugin-react": "^7.8.2",
     "lodash.range": "^3.2.0",
     "prettier": "^1.12.1",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
     "rimraf": "^2.6.2"
+  },
+  "peerDependencies": {
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2"
   },
   "dependencies": {
     "@craigmorton/linebreak": "^0.4.5",
@@ -50,8 +56,6 @@
     "fbjs": "^0.8.16",
     "multi-key-cache": "^1.0.2",
     "prop-types": "^15.6.1",
-    "react": "^16.3.2",
-    "react-dom": "^16.3.2",
     "react-reconciler": "^0.10.0",
     "scroller": "https://github.com/mjohnston/scroller"
   }
