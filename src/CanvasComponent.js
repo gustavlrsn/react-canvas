@@ -18,12 +18,16 @@ export default class CanvasComponent {
     const subscriptions = this.subscriptions;
     const listeners = this.listeners;
 
+    let isListenerDifferent = false;
     if (listeners.get(type) !== listener) {
       listeners.set(type, listener);
+      isListenerDifferent = true;
     }
 
     if (listener) {
-      if (!subscriptions.has(type)) {
+      // Add subscription if this is the first listener of the given type
+      // or the new listener is different from the current listener.
+      if (!subscriptions.has(type) || isListenerDifferent) {
         subscriptions.set(type, this.node.subscribe(type, listener, this));
       }
     } else {
