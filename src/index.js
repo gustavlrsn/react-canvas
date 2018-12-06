@@ -6,7 +6,7 @@ import FontFace from "./FontFace";
 import FrameUtils from "./FrameUtils";
 import measureText from "./measureText";
 import CanvasComponent from "./CanvasComponent";
-import { CanvasRenderer, registerComponentConstructor } from "./CanvasRenderer";
+import CanvasRenderer from "./CanvasRenderer";
 import { registerLayerType } from "./DrawingUtils";
 
 Surface.canvasRenderer = CanvasRenderer;
@@ -28,7 +28,7 @@ const registerCustomComponent = function(name, applyProps, drawFunction) {
     };
   };
 
-  registerComponentConstructor(name, klass);
+  CanvasRenderer.registerComponentConstructor(name, klass);
 
   return name;
 };
