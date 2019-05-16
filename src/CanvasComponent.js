@@ -1,7 +1,7 @@
 import RenderLayer from "./RenderLayer";
 import { make } from "./FrameUtils";
 import * as EventTypes from "./EventTypes";
-import emptyObject from "fbjs/lib/emptyObject";
+import { emptyObject } from "./utils";
 
 let LAYER_GUID = 1;
 
@@ -126,6 +126,7 @@ export default class CanvasComponent {
     // Register events
     for (const type in EventTypes) {
       if (prevProps[type] !== props[type]) {
+        console.log(props[type], type)
         this.putEventListener(EventTypes[type], props[type]);
       }
     }

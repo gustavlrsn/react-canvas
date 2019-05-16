@@ -1,5 +1,5 @@
 import computeLayout from "css-layout";
-import emptyObject from "fbjs/lib/emptyObject";
+import { emptyObject } from "./utils";
 
 function createNode(layer) {
   return {

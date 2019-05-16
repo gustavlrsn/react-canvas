@@ -1,14 +1,19 @@
 import React from "react";
-import invariant from "fbjs/lib/invariant";
-import emptyObject from "fbjs/lib/emptyObject";
+import invariant from "invariant";
+import { emptyObject } from "./utils";
 import Gradient from "./Gradient";
 import Text from "./Text";
 import Group from "./Group";
 import { RawImage } from "./Image";
-import ReactDOMFrameScheduling from "./ReactDOMFrameScheduling";
 import ReactFiberReconciler from "react-reconciler";
 import CanvasComponent from "./CanvasComponent";
 import { getClosestInstanceFromNode } from "./ReactDOMComponentTree";
+import {
+  unstable_now as now,
+  unstable_shouldYield as shouldYield,
+  unstable_scheduleCallback as scheduleDeferredCallback,
+  unstable_cancelCallback as cancelDeferredCallback
+} from 'scheduler';
 
 const UPDATE_SIGNAL = {};
 const MAX_POOLED_COMPONENTS_PER_TYPE = 1024;
@@ -120,7 +125,11 @@ const CanvasHostConfig = {
     return emptyObject;
   },
 
-  scheduleDeferredCallback: ReactDOMFrameScheduling.rIC,
+  scheduleDeferredCallback,
+
+  cancelDeferredCallback,
+
+  shouldYield,
 
   shouldSetTextContent(type, props) {
     return (
@@ -128,78 +137,78 @@ const CanvasHostConfig = {
     );
   },
 
-  now: ReactDOMFrameScheduling.now,
+  now,
 
   isPrimaryRenderer: false,
 
   useSyncScheduling: true,
 
-  mutation: {
-    appendChild(parentInstance, child) {
-      const childLayer = child.getLayer();
-      const parentLayer = parentInstance.getLayer();
+  supportsMutation: true,
 
-      if (childLayer.parentLayer === parentLayer) {
-        childLayer.moveToTop();
-      } else {
-        childLayer.inject(parentLayer);
-      }
+  appendChild(parentInstance, child) {
+    const childLayer = child.getLayer();
+    const parentLayer = parentInstance.getLayer();
 
-      parentLayer.invalidateLayout();
-    },
+    if (childLayer.parentLayer === parentLayer) {
+      childLayer.moveToTop();
+    } else {
+      childLayer.inject(parentLayer);
+    }
 
-    appendChildToContainer(parentInstance, child) {
-      const childLayer = child.getLayer();
-      const parentLayer = parentInstance.getLayer();
+    parentLayer.invalidateLayout();
+  },
 
-      if (childLayer.parentLayer === parentLayer) {
-        childLayer.moveToTop();
-      } else {
-        childLayer.inject(parentLayer);
-      }
+  appendChildToContainer(parentInstance, child) {
+    const childLayer = child.getLayer();
+    const parentLayer = parentInstance.getLayer();
 
-      parentLayer.invalidateLayout();
-    },
+    if (childLayer.parentLayer === parentLayer) {
+      childLayer.moveToTop();
+    } else {
+      childLayer.inject(parentLayer);
+    }
 
-    insertBefore(parentInstance, child, beforeChild) {
-      const parentLayer = parentInstance.getLayer();
-      child.getLayer().injectBefore(parentLayer, beforeChild.getLayer());
-      parentLayer.invalidateLayout();
-    },
+    parentLayer.invalidateLayout();
+  },
 
-    insertInContainerBefore(parentInstance, child, beforeChild) {
-      const parentLayer = parentInstance.getLayer();
-      child.getLayer().injectBefore(parentLayer, beforeChild.getLayer());
-      parentLayer.invalidateLayout();
-    },
+  insertBefore(parentInstance, child, beforeChild) {
+    const parentLayer = parentInstance.getLayer();
+    child.getLayer().injectBefore(parentLayer, beforeChild.getLayer());
+    parentLayer.invalidateLayout();
+  },
 
-    removeChild(parentInstance, child) {
-      const parentLayer = parentInstance.getLayer();
-      child.getLayer().remove();
-      freeComponentAndChildren(child);
-      parentLayer.invalidateLayout();
-    },
+  insertInContainerBefore(parentInstance, child, beforeChild) {
+    const parentLayer = parentInstance.getLayer();
+    child.getLayer().injectBefore(parentLayer, beforeChild.getLayer());
+    parentLayer.invalidateLayout();
+  },
 
-    removeChildFromContainer(parentInstance, child) {
-      const parentLayer = parentInstance.getLayer();
-      child.getLayer().remove();
-      freeComponentAndChildren(child);
-      parentLayer.invalidateLayout();
-    },
+  removeChild(parentInstance, child) {
+    const parentLayer = parentInstance.getLayer();
+    child.getLayer().remove();
+    freeComponentAndChildren(child);
+    parentLayer.invalidateLayout();
+  },
 
-    commitTextUpdate(/*textInstance, oldText, newText*/) {
-      // Noop
-    },
+  removeChildFromContainer(parentInstance, child) {
+    const parentLayer = parentInstance.getLayer();
+    child.getLayer().remove();
+    freeComponentAndChildren(child);
+    parentLayer.invalidateLayout();
+  },
 
-    commitMount(/*instance, type, newProps*/) {
-      // Noop
-    },
+  commitTextUpdate(/*textInstance, oldText, newText*/) {
+    // Noop
+  },
 
-    commitUpdate(instance, updatePayload, type, oldProps, newProps) {
-      if (typeof instance.applyLayerProps !== "undefined") {
-        instance.applyLayerProps(oldProps, newProps);
-        instance.getLayer().invalidateLayout();
-      }
+  commitMount(/*instance, type, newProps*/) {
+    // Noop
+  },
+
+  commitUpdate(instance, updatePayload, type, oldProps, newProps) {
+    if (typeof instance.applyLayerProps !== "undefined") {
+      instance.applyLayerProps(oldProps, newProps);
+      instance.getLayer().invalidateLayout();
     }
   }
 };
@@ -216,8 +225,11 @@ CanvasRenderer.injectIntoDevTools({
   }
 });
 
-CanvasRenderer.registerComponentConstructor = (name, ctor) => {
+const registerComponentConstructor = (name, ctor) => {
   componentConstructors[name] = ctor;
 };
 
-export default CanvasRenderer;
+export {
+  CanvasRenderer,
+  registerComponentConstructor
+};

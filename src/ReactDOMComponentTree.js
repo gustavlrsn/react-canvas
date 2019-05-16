@@ -7,7 +7,7 @@ const HostText = 6;
 const randomKey = Math.random()
   .toString(36)
   .slice(2);
-const internalInstanceKey = "__reactInternalInstance$" + randomKey;
+const internalInstanceKey = '__reactInternalInstance$' + randomKey;
 
 /**
  * Given a DOM node, return the closest ReactDOMComponent or
@@ -28,7 +28,7 @@ export function getClosestInstanceFromNode(node) {
     }
   }
 
-  const inst = node[internalInstanceKey];
+  let inst = node[internalInstanceKey];
   if (inst.tag === HostComponent || inst.tag === HostText) {
     // In Fiber, this will always be the deepest root.
     return inst;
