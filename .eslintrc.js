@@ -28,7 +28,8 @@ module.exports = {
     'import/no-extraneous-dependencies': [
       'error',
       { devDependencies: ['stories/**/*'] }
-    ]
+    ],
+    'jsx-a11y/mouse-events-have-key-events': 0
   },
   settings: {
     react: {

@@ -31,7 +31,6 @@
     "@babel/plugin-proposal-class-properties": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-react": "^7.0.0",
-    "@storybook/addon-actions": "^5.0.11",
     "@storybook/react": "^5.0.11",
     "alea": "^0.0.9",
     "babel-eslint": "^10.0.1",
