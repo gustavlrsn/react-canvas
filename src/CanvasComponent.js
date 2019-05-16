@@ -127,8 +127,6 @@ export default class CanvasComponent {
     // Register events
     for (const type in EventTypes) {
       if (prevProps[type] !== props[type]) {
-        // eslint-disable-next-line no-console
-        console.log(props[type], type)
         this.putEventListener(EventTypes[type], props[type])
       }
     }
