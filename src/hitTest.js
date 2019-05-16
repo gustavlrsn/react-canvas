@@ -1,39 +1,39 @@
-import { make, clone, inset, intersects } from "./FrameUtils";
-import * as EventTypes from "./EventTypes";
+import { make, clone, inset, intersects } from './FrameUtils'
+import * as EventTypes from './EventTypes'
 
 /**
  * @private
  */
 function sortByZIndexDescending(layer, otherLayer) {
-  return (otherLayer.zIndex || 0) - (layer.zIndex || 0);
+  return (otherLayer.zIndex || 0) - (layer.zIndex || 0)
 }
 
 /**
  * @private
  */
 function getHitHandle(type) {
-  let hitHandle;
+  let hitHandle
   for (const tryHandle in EventTypes) {
     if (EventTypes[tryHandle] === type) {
-      hitHandle = tryHandle;
-      break;
+      hitHandle = tryHandle
+      break
     }
   }
-  return hitHandle;
+  return hitHandle
 }
 
 /**
  * @private
  */
 function getLayerAtPoint(root, type, point, tx, ty) {
-  let layer = null;
-  const hitHandle = getHitHandle(type);
-  let sortedChildren;
-  let hitFrame = clone(root.frame);
+  let layer = null
+  const hitHandle = getHitHandle(type)
+  let sortedChildren
+  let hitFrame = clone(root.frame)
 
   // Early bail for non-visible layers
-  if (typeof root.alpha === "number" && root.alpha < 0.01) {
-    return null;
+  if (typeof root.alpha === 'number' && root.alpha < 0.01) {
+    return null
   }
 
   // Child-first search
@@ -41,7 +41,7 @@ function getLayerAtPoint(root, type, point, tx, ty) {
     sortedChildren = root.children
       .slice()
       .reverse()
-      .sort(sortByZIndexDescending);
+      .sort(sortByZIndexDescending)
     for (let i = 0, len = sortedChildren.length; i < len; i++) {
       layer = getLayerAtPoint(
         sortedChildren[i],
@@ -49,9 +49,9 @@ function getLayerAtPoint(root, type, point, tx, ty) {
         point,
         tx + (root.translateX || 0),
         ty + (root.translateY || 0)
-      );
+      )
       if (layer) {
-        break;
+        break
       }
     }
   }
@@ -64,24 +64,24 @@ function getLayerAtPoint(root, type, point, tx, ty) {
       -root.hitOutsets[1],
       -root.hitOutsets[2],
       -root.hitOutsets[3]
-    );
+    )
   }
 
   // Check for x/y translation
   if (tx) {
-    hitFrame.x += tx;
+    hitFrame.x += tx
   }
 
   if (ty) {
-    hitFrame.y += ty;
+    hitFrame.y += ty
   }
 
   // No child layer at the given point. Try the parent layer.
   if (!layer && root[hitHandle] && intersects(hitFrame, point)) {
-    layer = root;
+    layer = root
   }
 
-  return layer;
+  return layer
 }
 
 /**
@@ -93,18 +93,18 @@ function getLayerAtPoint(root, type, point, tx, ty) {
  * @return {RenderLayer}
  */
 function hitTest(e, rootLayer, rootNode) {
-  const touch = e.touches ? e.touches[0] : e;
-  let touchX = touch.pageX;
-  let touchY = touch.pageY;
-  let rootNodeBox;
+  const touch = e.touches ? e.touches[0] : e
+  let touchX = touch.pageX
+  let touchY = touch.pageY
+  let rootNodeBox
   if (rootNode) {
-    rootNodeBox = rootNode.getBoundingClientRect();
-    touchX -= rootNodeBox.left;
-    touchY -= rootNodeBox.top;
+    rootNodeBox = rootNode.getBoundingClientRect()
+    touchX -= rootNodeBox.left
+    touchY -= rootNodeBox.top
   }
 
-  touchY = touchY - window.pageYOffset;
-  touchX = touchX - window.pageXOffset;
+  touchY = touchY - window.pageYOffset
+  touchX = touchX - window.pageXOffset
 
   return getLayerAtPoint(
     rootLayer,
@@ -112,8 +112,8 @@ function hitTest(e, rootLayer, rootNode) {
     make(touchX, touchY, 1, 1),
     rootLayer.translateX || 0,
     rootLayer.translateY || 0
-  );
+  )
 }
 
-hitTest.getHitHandle = getHitHandle;
-export default hitTest;
+hitTest.getHitHandle = getHitHandle
+export default hitTest

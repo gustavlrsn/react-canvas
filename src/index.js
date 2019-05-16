@@ -1,37 +1,37 @@
-import Surface from "./Surface";
-import Core from "./Core";
-import Image from "./Image";
-import ListView from "./ListView";
-import FontFace from "./FontFace";
-import FrameUtils from "./FrameUtils";
-import measureText from "./measureText";
-import CanvasComponent from "./CanvasComponent";
-import { CanvasRenderer, registerComponentConstructor } from "./CanvasRenderer";
-import { registerLayerType } from "./DrawingUtils";
+import Surface from './Surface'
+import Core from './Core'
+import Image from './Image'
+import ListView from './ListView'
+import FontFace from './FontFace'
+import FrameUtils from './FrameUtils'
+import measureText from './measureText'
+import CanvasComponent from './CanvasComponent'
+import { CanvasRenderer, registerComponentConstructor } from './CanvasRenderer'
+import { registerLayerType } from './DrawingUtils'
 
-Surface.canvasRenderer = CanvasRenderer;
+Surface.canvasRenderer = CanvasRenderer
 
 const registerCustomComponent = function(name, applyProps, drawFunction) {
-  const layerType = name.toLowerCase();
+  const layerType = name.toLowerCase()
 
-  registerLayerType(layerType, drawFunction);
+  registerLayerType(layerType, drawFunction)
 
   const klass = class extends CanvasComponent {
-    displayName = name;
+    displayName = name
 
     applyLayerProps = (prevProps, props) => {
-      const style = props && props.style ? props.style : {};
-      const layer = this.node;
-      layer.type = layerType;
-      applyProps(layer, style, prevProps, props);
-      this.applyCommonLayerProps(prevProps, props);
-    };
-  };
+      const style = props && props.style ? props.style : {}
+      const layer = this.node
+      layer.type = layerType
+      applyProps(layer, style, prevProps, props)
+      this.applyCommonLayerProps(prevProps, props)
+    }
+  }
 
-  registerComponentConstructor(name, klass);
+  registerComponentConstructor(name, klass)
 
-  return name;
-};
+  return name
+}
 
 const ReactCanvas = {
   ...Core,
@@ -41,13 +41,13 @@ const ReactCanvas = {
   FontFace,
   FrameUtils,
   measureText,
-  registerCustomComponent
-};
+  registerCustomComponent,
+}
 
-export const Text = ReactCanvas.Text;
-export const Group = ReactCanvas.Group;
-export const Gradient = ReactCanvas.Gradient;
-export const Layer = ReactCanvas.Layer;
+export const Text = ReactCanvas.Text
+export const Group = ReactCanvas.Group
+export const Gradient = ReactCanvas.Gradient
+export const Layer = ReactCanvas.Layer
 
 export {
   Surface,
@@ -56,7 +56,7 @@ export {
   FontFace,
   FrameUtils,
   measureText,
-  registerCustomComponent
-};
+  registerCustomComponent,
+}
 
-export default ReactCanvas;
+export default ReactCanvas

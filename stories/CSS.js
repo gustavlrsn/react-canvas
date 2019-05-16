@@ -1,19 +1,19 @@
-import React from "react";
-import { storiesOf } from "@storybook/react";
-import ReactCanvas from "../src/index";
-const { FontFace, Text, Group, Image, Surface } = ReactCanvas;
+import React from 'react'
+import { storiesOf } from '@storybook/react'
+import ReactCanvas from '../src/index'
+const { FontFace, Text, Group, Image, Surface } = ReactCanvas
 
 class App extends React.Component {
   componentDidMount() {
-    window.addEventListener("resize", this.handleResize, true);
+    window.addEventListener('resize', this.handleResize, true)
   }
 
   componentWillUnmount() {
-    this._unmounted = true;
+    this._unmounted = true
   }
 
   render() {
-    const size = this.getSize();
+    const size = this.getSize()
 
     return (
       <Surface
@@ -46,83 +46,83 @@ class App extends React.Component {
           </Text>
         </Group>
       </Surface>
-    );
+    )
   }
 
   // Styles
   // ======
 
   getSize = () => {
-    return { width: window.innerWidth - 30, height: window.innerHeight - 30 };
-  };
+    return { width: window.innerWidth - 30, height: window.innerHeight - 30 }
+  }
 
   getPageStyle = () => {
-    const size = this.getSize();
+    const size = this.getSize()
     return {
-      position: "relative",
+      position: 'relative',
       padding: 14,
       width: size.width,
       height: size.height,
-      backgroundColor: "#f7f7f7",
-      flexDirection: "column"
-    };
-  };
+      backgroundColor: '#f7f7f7',
+      flexDirection: 'column',
+    }
+  }
 
   getImageGroupStyle = () => {
     return {
-      position: "relative",
+      position: 'relative',
       flex: 1,
-      backgroundColor: "#eee"
-    };
-  };
+      backgroundColor: '#eee',
+    }
+  }
 
   getImageStyle = () => {
     return {
-      position: "absolute",
+      position: 'absolute',
       left: 0,
       top: 0,
       right: 0,
-      bottom: 0
-    };
-  };
+      bottom: 0,
+    }
+  }
 
   getTitleStyle = () => {
     return {
-      fontFace: FontFace("Georgia"),
+      fontFace: FontFace('Georgia'),
       fontSize: 22,
       lineHeight: 28,
       height: 28,
       marginBottom: 10,
-      color: "#333",
-      textAlign: "center"
-    };
-  };
+      color: '#333',
+      textAlign: 'center',
+    }
+  }
 
   getExcerptStyle = () => {
     return {
-      fontFace: FontFace("Georgia"),
+      fontFace: FontFace('Georgia'),
       fontSize: 17,
       lineHeight: 25,
       marginTop: 15,
       flex: 1,
-      color: "#333"
-    };
-  };
+      color: '#333',
+    }
+  }
 
   // Events
   // ======
 
   handleResize = () => {
     if (!this._unmounted) {
-      this.forceUpdate();
+      this.forceUpdate()
     }
-  };
+  }
 }
 
-storiesOf("CSS", module).add("test-css", () => {
+storiesOf('CSS', module).add('test-css', () => {
   return (
     <div>
       <App />
     </div>
-  );
-});
+  )
+})

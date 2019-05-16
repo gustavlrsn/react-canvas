@@ -1,8 +1,8 @@
 const Core = {
-  Layer: "Layer",
-  Group: "Group",
-  Text: "Text",
-  Gradient: "Gradient"
-};
+  Layer: 'Layer',
+  Group: 'Group',
+  Text: 'Text',
+  Gradient: 'Gradient',
+}
 
-export default Core;
+export default Core
