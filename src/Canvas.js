@@ -1,5 +1,3 @@
-'use strict'
-
 // Note that this class intentionally does not use PooledClass.
 // DrawingUtils manages <canvas> pooling for more fine-grained control.
 
@@ -19,13 +17,13 @@ function Canvas(width, height, scale) {
 }
 
 Object.assign(Canvas.prototype, {
-  getRawCanvas: function() {
+  getRawCanvas() {
     return this._canvas
   },
 
-  getContext: function() {
+  getContext() {
     return this._canvas.getContext('2d')
-  },
+  }
 })
 
 // PooledClass:

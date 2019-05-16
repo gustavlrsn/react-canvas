@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 
-const NOOP = function() {}
+const NOOP = () => {}
 
 function Img(src) {
   this._originalSrc = src
@@ -23,7 +23,7 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
   /**
    * Pooling owner looks for this
    */
-  destructor: function() {
+  destructor() {
     // Make sure we aren't leaking callbacks.
     this.removeAllListeners()
   },
@@ -33,7 +33,7 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {String}
    */
-  getOriginalSrc: function() {
+  getOriginalSrc() {
     return this._originalSrc
   },
 
@@ -42,7 +42,7 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {HTMLImageElement}
    */
-  getRawImage: function() {
+  getRawImage() {
     return this._img
   },
 
@@ -51,7 +51,7 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {Number}
    */
-  getWidth: function() {
+  getWidth() {
     return this._img.naturalWidth
   },
 
@@ -60,16 +60,16 @@ Object.assign(Img.prototype, EventEmitter.prototype, {
    *
    * @return {Number}
    */
-  getHeight: function() {
+  getHeight() {
     return this._img.naturalHeight
   },
 
   /**
    * @return {Bool}
    */
-  isLoaded: function() {
+  isLoaded() {
     return this._img.naturalHeight > 0
-  },
+  }
 })
 
 const kInstancePoolLength = 300
@@ -80,16 +80,16 @@ const _instancePool = {
   elements: {},
 
   // Push with 0 frequency
-  push: function(hash, data) {
+  push(hash, data) {
     this.length++
     this.elements[hash] = {
-      hash: hash, // Helps identifying
+      hash, // Helps identifying
       freq: 0,
-      data: data,
+      data
     }
   },
 
-  get: function(path) {
+  get(path) {
     const element = this.elements[path]
 
     if (element) {
@@ -101,7 +101,7 @@ const _instancePool = {
   },
 
   // used to explicitely remove the path
-  removeElement: function(path) {
+  removeElement(path) {
     // Now almighty GC can claim this soul
     const element = this.elements[path]
     delete this.elements[path]
@@ -109,7 +109,7 @@ const _instancePool = {
     return element
   },
 
-  _reduceLeastUsed: function(least, currentHash) {
+  _reduceLeastUsed(least, currentHash) {
     const current = _instancePool.elements[currentHash]
 
     if (least.freq > current.freq) {
@@ -119,10 +119,10 @@ const _instancePool = {
     return least
   },
 
-  popLeastUsed: function() {
+  popLeastUsed() {
     const reducer = _instancePool._reduceLeastUsed
     const minUsed = Object.keys(this.elements).reduce(reducer, {
-      freq: Infinity,
+      freq: Infinity
     })
 
     if (minUsed.hash) {
@@ -130,7 +130,7 @@ const _instancePool = {
     }
 
     return null
-  },
+  }
 }
 
 const ImageCache = {
@@ -139,7 +139,7 @@ const ImageCache = {
    *
    * @return {Img}
    */
-  get: function(src) {
+  get(src) {
     let image = _instancePool.get(src)
     if (!image) {
       // Awesome LRU
@@ -150,7 +150,7 @@ const ImageCache = {
       _instancePool.push(image.getOriginalSrc(), image)
     }
     return image
-  },
+  }
 }
 
 export default ImageCache

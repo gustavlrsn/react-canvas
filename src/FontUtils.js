@@ -14,16 +14,10 @@ const kFontLoadTimeout = 3000
 function createTestNode(family, attributes) {
   const span = document.createElement('span')
   span.setAttribute('data-fontfamily', family)
-  span.style.cssText =
-    'position:absolute; left:-5000px; top:-5000px; visibility:hidden;' +
-    'font-size:100px; font-family:"' +
-    family +
-    '", Helvetica;font-weight: ' +
-    attributes.weight +
-    ';' +
-    'font-style:' +
-    attributes.style +
-    ';'
+  span.style.cssText = `${'position:absolute; left:-5000px; top:-5000px; visibility:hidden;' +
+    'font-size:100px; font-family:"'}${family}", Helvetica;font-weight: ${
+    attributes.weight
+  }; font-style:${attributes.style};`
   span.innerHTML = 'BESs'
   return span
 }
@@ -33,7 +27,7 @@ function createTestNode(family, attributes) {
  */
 function handleFontLoad(fontFace, timeout) {
   const error = timeout
-    ? 'Exceeded load timeout of ' + kFontLoadTimeout + 'ms'
+    ? `Exceeded load timeout of ${kFontLoadTimeout}ms`
     : null
 
   if (!error) {
@@ -43,7 +37,7 @@ function handleFontLoad(fontFace, timeout) {
   }
 
   // Execute pending callbacks.
-  _pendingFonts[fontFace.id].callbacks.forEach(function(callback) {
+  _pendingFonts[fontFace.id].callbacks.forEach(callback => {
     callback(error)
   })
 
@@ -93,7 +87,7 @@ function loadFontNormal(fontFace, callback) {
   // Font load is already in progress:
   if (_pendingFonts[fontFace.id]) {
     _pendingFonts[fontFace.id].callbacks.push(callback)
-    return
+    return null
   }
 
   // Create the test <span>'s for measuring.
@@ -104,13 +98,13 @@ function loadFontNormal(fontFace, callback) {
 
   _pendingFonts[fontFace.id] = {
     startTime: Date.now(),
-    defaultNode: defaultNode,
-    testNode: testNode,
-    callbacks: [callback],
+    defaultNode,
+    testNode,
+    callbacks: [callback]
   }
 
   // Font watcher
-  const checkFont = function() {
+  const checkFont = () => {
     const currWidth = testNode.getBoundingClientRect().width
     const defaultWidth = defaultNode.getBoundingClientRect().width
     const loaded = currWidth !== defaultWidth
@@ -119,6 +113,7 @@ function loadFontNormal(fontFace, callback) {
       handleFontLoad(fontFace, null)
     } else {
       // Timeout?
+      // eslint-disable-next-line no-lonely-if
       if (
         Date.now() - _pendingFonts[fontFace.id].startTime >=
         kFontLoadTimeout
@@ -132,6 +127,7 @@ function loadFontNormal(fontFace, callback) {
 
   // Start watching
   checkFont()
+  return null
 }
 
 // Internal
@@ -144,17 +140,20 @@ function loadFontNormal(fontFace, callback) {
 function loadFontNative(fontFace, callback) {
   // See if we've previously loaded it.
   if (_loadedFonts[fontFace.id]) {
-    return callback(null)
+    callback(null)
+    return
   }
 
   // See if we've previously failed to load it.
   if (_failedFonts[fontFace.id]) {
-    return callback(_failedFonts[fontFace.id])
+    callback(_failedFonts[fontFace.id])
+    return
   }
 
   // System font: assume it's installed.
   if (!fontFace.url) {
-    return callback(null)
+    callback(null)
+    return
   }
 
   // Font load is already in progress:
@@ -165,22 +164,22 @@ function loadFontNative(fontFace, callback) {
 
   _pendingFonts[fontFace.id] = {
     startTime: Date.now(),
-    callbacks: [callback],
+    callbacks: [callback]
   }
 
   // Use font loader API
   const theFontFace = new window.FontFace(
     fontFace.family,
-    'url(' + fontFace.url + ')',
+    `url(${fontFace.url})`,
     fontFace.attributes
   )
 
   theFontFace.load().then(
-    function() {
+    () => {
       _loadedFonts[fontFace.id] = true
       callback(null)
     },
-    function(err) {
+    err => {
       _failedFonts[fontFace.id] = err
       callback(err)
     }

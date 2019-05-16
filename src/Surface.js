@@ -1,5 +1,3 @@
-'use strict'
-
 import React from 'react'
 import PropTypes from 'prop-types'
 import RenderLayer from './RenderLayer'
@@ -15,7 +13,7 @@ const MOUSE_CLICK_DURATION_MS = 300
  * ReactCanvas components cannot be rendered outside a Surface.
  */
 class Surface extends React.Component {
-  displayName = 'Surface'
+  static displayName = 'Surface'
 
   static propTypes = {
     className: PropTypes.string,
@@ -24,22 +22,25 @@ class Surface extends React.Component {
     left: PropTypes.number.isRequired,
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
-    scale: PropTypes.number.isRequired,
+    scale: PropTypes.number,
     enableCSSLayout: PropTypes.bool,
-    children: PropTypes.node,
+    children: PropTypes.node.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
     style: PropTypes.object,
-    canvas: PropTypes.object,
+    // eslint-disable-next-line react/forbid-prop-types
+    canvas: PropTypes.object
   }
 
   static defaultProps = {
     scale: window.devicePixelRatio || 1,
+    className: '',
+    id: undefined,
+    enableCSSLayout: false,
+    style: {},
+    canvas: undefined
   }
 
   static canvasRenderer = null
-
-  setCanvasRef = canvas => {
-    this.canvas = canvas
-  }
 
   constructor(props) {
     super(props)
@@ -47,6 +48,10 @@ class Surface extends React.Component {
     if (props.canvas) {
       this.setCanvasRef(props.canvas)
     }
+  }
+
+  setCanvasRef = canvas => {
+    this.canvas = canvas
   }
 
   componentDidMount = () => {
@@ -57,20 +62,12 @@ class Surface extends React.Component {
     // `this.node` is injected into child components and represents the current
     // render tree.
     this.node = new RenderLayer()
-    this.node.frame = make(
-      this.props.left,
-      this.props.top,
-      this.props.width,
-      this.props.height
-    )
+    const { left, top, width, height, children } = this.props
+    this.node.frame = make(left, top, width, height)
     this.node.draw = this.batchedTick
 
     this.mountNode = Surface.canvasRenderer.createContainer(this)
-    Surface.canvasRenderer.updateContainer(
-      this.props.children,
-      this.mountNode,
-      this
-    )
+    Surface.canvasRenderer.updateContainer(children, this.mountNode, this)
 
     // Execute initial draw on mount.
     this.node.draw()
@@ -99,50 +96,6 @@ class Surface extends React.Component {
     if (this.node) {
       this.node.draw()
     }
-  }
-
-  render() {
-    if (this.props.canvas) {
-      return null
-    }
-
-    // Scale the drawing area to match DPI.
-    const width = this.props.width * this.props.scale
-    const height = this.props.height * this.props.scale
-    let style = {}
-
-    if (this.props.style) {
-      style = Object.assign({}, this.props.style)
-    }
-
-    if (typeof this.props.width !== 'undefined') {
-      style.width = this.props.width
-    }
-
-    if (typeof this.props.height !== 'undefined') {
-      style.height = this.props.height
-    }
-
-    return React.createElement('canvas', {
-      ref: this.setCanvasRef,
-      className: this.props.className,
-      id: this.props.id,
-      width: width,
-      height: height,
-      style: style,
-      onTouchStart: this.handleTouchStart,
-      onTouchMove: this.handleTouchMove,
-      onTouchEnd: this.handleTouchEnd,
-      onTouchCancel: this.handleTouchEnd,
-      onMouseDown: this.handleMouseEvent,
-      onMouseUp: this.handleMouseEvent,
-      onMouseMove: this.handleMouseEvent,
-      onMouseOver: this.handleMouseEvent,
-      onMouseOut: this.handleMouseEvent,
-      onContextMenu: this.handleContextMenu,
-      onClick: this.handleMouseEvent,
-      onDoubleClick: this.handleMouseEvent,
-    })
   }
 
   // Drawing
@@ -301,6 +254,50 @@ class Surface extends React.Component {
 
   handleContextMenu = e => {
     this.hitTest(e)
+  }
+
+  render() {
+    if (this.props.canvas) {
+      return null
+    }
+
+    // Scale the drawing area to match DPI.
+    const width = this.props.width * this.props.scale
+    const height = this.props.height * this.props.scale
+    let style = {}
+
+    if (this.props.style) {
+      style = Object.assign({}, this.props.style)
+    }
+
+    if (typeof this.props.width !== 'undefined') {
+      style.width = this.props.width
+    }
+
+    if (typeof this.props.height !== 'undefined') {
+      style.height = this.props.height
+    }
+
+    return React.createElement('canvas', {
+      ref: this.setCanvasRef,
+      className: this.props.className,
+      id: this.props.id,
+      width,
+      height,
+      style,
+      onTouchStart: this.handleTouchStart,
+      onTouchMove: this.handleTouchMove,
+      onTouchEnd: this.handleTouchEnd,
+      onTouchCancel: this.handleTouchEnd,
+      onMouseDown: this.handleMouseEvent,
+      onMouseUp: this.handleMouseEvent,
+      onMouseMove: this.handleMouseEvent,
+      onMouseOver: this.handleMouseEvent,
+      onMouseOut: this.handleMouseEvent,
+      onContextMenu: this.handleContextMenu,
+      onClick: this.handleMouseEvent,
+      onDoubleClick: this.handleMouseEvent
+    })
   }
 }
 

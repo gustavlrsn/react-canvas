@@ -6,7 +6,7 @@ function linear(t) {
 }
 
 function easeInQuad(t) {
-  return Math.pow(t, 2)
+  return t ** 2
 }
 
 function easeOutQuad(t) {
@@ -36,5 +36,5 @@ export {
   easeInOutQuad,
   easeInCubic,
   easeOutCubic,
-  easeInOutCubic,
+  easeInOutCubic
 }

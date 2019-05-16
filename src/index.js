@@ -1,7 +1,6 @@
 import Surface from './Surface'
 import Core from './Core'
 import Image from './Image'
-import ListView from './ListView'
 import FontFace from './FontFace'
 import FrameUtils from './FrameUtils'
 import measureText from './measureText'
@@ -11,7 +10,7 @@ import { registerLayerType } from './DrawingUtils'
 
 Surface.canvasRenderer = CanvasRenderer
 
-const registerCustomComponent = function(name, applyProps, drawFunction) {
+const registerCustomComponent = (name, applyProps, drawFunction) => {
   const layerType = name.toLowerCase()
 
   registerLayerType(layerType, drawFunction)
@@ -37,26 +36,28 @@ const ReactCanvas = {
   ...Core,
   Surface,
   Image,
-  ListView,
   FontFace,
   FrameUtils,
   measureText,
-  registerCustomComponent,
+  registerCustomComponent
 }
 
+// eslint-disable-next-line prefer-destructuring
 export const Text = ReactCanvas.Text
+// eslint-disable-next-line prefer-destructuring
 export const Group = ReactCanvas.Group
+// eslint-disable-next-line prefer-destructuring
 export const Gradient = ReactCanvas.Gradient
+// eslint-disable-next-line prefer-destructuring
 export const Layer = ReactCanvas.Layer
 
 export {
   Surface,
   Image,
-  ListView,
   FontFace,
   FrameUtils,
   measureText,
-  registerCustomComponent,
+  registerCustomComponent
 }
 
 export default ReactCanvas

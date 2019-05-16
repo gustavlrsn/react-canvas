@@ -1,34 +1,34 @@
 import React from 'react'
 import invariant from 'invariant'
+import ReactFiberReconciler from 'react-reconciler'
+import {
+  unstable_now as now,
+  unstable_shouldYield as shouldYield,
+  unstable_scheduleCallback as scheduleDeferredCallback,
+  unstable_cancelCallback as cancelDeferredCallback
+} from 'scheduler'
 import { emptyObject } from './utils'
 import Gradient from './Gradient'
 import Text from './Text'
 import Group from './Group'
 import { RawImage } from './Image'
-import ReactFiberReconciler from 'react-reconciler'
 import CanvasComponent from './CanvasComponent'
 import { getClosestInstanceFromNode } from './ReactDOMComponentTree'
-import {
-  unstable_now as now,
-  unstable_shouldYield as shouldYield,
-  unstable_scheduleCallback as scheduleDeferredCallback,
-  unstable_cancelCallback as cancelDeferredCallback,
-} from 'scheduler'
 
 const UPDATE_SIGNAL = {}
 const MAX_POOLED_COMPONENTS_PER_TYPE = 1024
 
 const componentConstructors = {
-  Gradient: Gradient,
-  Text: Text,
-  Group: Group,
-  RawImage: RawImage,
+  Gradient,
+  Text,
+  Group,
+  RawImage
 }
 
 const componentPool = {}
 
 const freeComponentToPool = component => {
-  const type = component.type
+  const { type } = component
 
   if (!(component.type in componentPool)) {
     componentPool[type] = []
@@ -44,7 +44,7 @@ const freeComponentToPool = component => {
 const freeComponentAndChildren = c => {
   if (!(c instanceof CanvasComponent)) return
 
-  const children = c.getLayer().children
+  const { children } = c.getLayer()
 
   for (let i = 0; i < children.length; i++) {
     const childLayer = children[i]
@@ -66,7 +66,7 @@ const CanvasHostConfig = {
     child.getLayer().inject(parentInstance.getLayer())
   },
 
-  createInstance(type, props /*, internalInstanceHandle*/) {
+  createInstance(type, props /* , internalInstanceHandle */) {
     let instance
 
     const pool = componentPool[type]
@@ -85,11 +85,13 @@ const CanvasHostConfig = {
     return instance
   },
 
-  createTextInstance(text /*, rootContainerInstance, internalInstanceHandle*/) {
+  createTextInstance(
+    text /* , rootContainerInstance, internalInstanceHandle */
+  ) {
     return text
   },
 
-  finalizeInitialChildren(/*domElement, type, props*/) {
+  finalizeInitialChildren(/* domElement, type, props */) {
     return false
   },
 
@@ -101,7 +103,7 @@ const CanvasHostConfig = {
     // Noop
   },
 
-  prepareUpdate(/*domElement, type, oldProps, newProps*/) {
+  prepareUpdate(/* domElement, type, oldProps, newProps */) {
     return UPDATE_SIGNAL
   },
 
@@ -109,11 +111,11 @@ const CanvasHostConfig = {
     // Noop
   },
 
-  resetTextContent(/*domElement*/) {
+  resetTextContent(/* domElement */) {
     // Noop
   },
 
-  shouldDeprioritizeSubtree(/*type, props*/) {
+  shouldDeprioritizeSubtree(/* type, props */) {
     return false
   },
 
@@ -197,11 +199,11 @@ const CanvasHostConfig = {
     parentLayer.invalidateLayout()
   },
 
-  commitTextUpdate(/*textInstance, oldText, newText*/) {
+  commitTextUpdate(/* textInstance, oldText, newText */) {
     // Noop
   },
 
-  commitMount(/*instance, type, newProps*/) {
+  commitMount(/* instance, type, newProps */) {
     // Noop
   },
 
@@ -210,7 +212,7 @@ const CanvasHostConfig = {
       instance.applyLayerProps(oldProps, newProps)
       instance.getLayer().invalidateLayout()
     }
-  },
+  }
 }
 
 const CanvasRenderer = ReactFiberReconciler(CanvasHostConfig)
@@ -222,7 +224,7 @@ CanvasRenderer.injectIntoDevTools({
   rendererPackageName: 'react-canvas',
   getInspectorDataForViewTag: (...args) => {
     console.log(args) // eslint-disable-line no-console
-  },
+  }
 })
 
 const registerComponentConstructor = (name, ctor) => {

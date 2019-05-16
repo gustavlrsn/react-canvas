@@ -10,17 +10,15 @@ storiesOf('Text', module).add('hello-world', () => {
         top={0}
         left={0}
         width={props.size.width}
-        height={props.size.height}
-      >
+        height={props.size.height}>
         <Group>
           <Text
             style={{
               top: 0,
               left: 0,
               width: props.size.width,
-              height: props.size.height,
-            }}
-          >
+              height: props.size.height
+            }}>
             Hello World
           </Text>
           <Text
@@ -29,16 +27,15 @@ storiesOf('Text', module).add('hello-world', () => {
               left: 0,
               color: 'red',
               width: props.size.width,
-              height: props.size.height,
-            }}
-          >
+              height: props.size.height
+            }}>
             Hello World 2
           </Text>
 
           <Image
             style={{
               top: 50,
-              left: 0,
+              left: 0
             }}
             src="https://i.imgur.com/U1p9DSP.png"
           />

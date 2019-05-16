@@ -25,5 +25,5 @@ export {
   onMouseOut,
   onClick,
   onContextMenu,
-  onDoubleClick,
+  onDoubleClick
 }

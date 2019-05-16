@@ -6,11 +6,8 @@ import { storiesOf } from '@storybook/react'
 import range from 'lodash.range'
 import { scaleBand, interpolateInferno } from 'd3-scale'
 
-import ReactCanvas from '../src/index'
-
-const { Surface } = ReactCanvas
-
 import Alea from 'alea'
+import { Surface, registerCustomComponent } from '../src/index'
 
 const random = new Alea(0)
 random()
@@ -21,11 +18,8 @@ const colRange = range(0, NUM_COLS)
 const rows = rowsRange.map(() => colRange.map(() => random()))
 
 const heatmapDraw = (ctx, layer) => {
-  const data = layer.data
-  const x = layer.frame.x
-  const y = layer.frame.y
-  const width = layer.frame.width
-  const height = layer.frame.height
+  const { data } = layer
+  const { x, y, width, height } = layer.frame
 
   const fillColor = layer.backgroundColor || '#FFF'
 
@@ -44,7 +38,7 @@ const heatmapDraw = (ctx, layer) => {
         x: horizontalScale(rowIdx),
         y: verticalScale(colIdx),
         width: horizontalScale.bandwidth(),
-        height: verticalScale.bandwidth(),
+        height: verticalScale.bandwidth()
       }
       ctx.fillRect(
         rectDimensions.x,
@@ -64,7 +58,7 @@ const heatmapApplyProps = (layer, style, prevProps, props) => {
   layer.data = props.data || []
 }
 
-const Heatmap = ReactCanvas.registerCustomComponent(
+const Heatmap = registerCustomComponent(
   'Heatmap',
   heatmapApplyProps,
   heatmapDraw
@@ -72,11 +66,12 @@ const Heatmap = ReactCanvas.registerCustomComponent(
 
 class App extends React.Component {
   static propTypes = {
-    data: PropTypes.array,
-    x: PropTypes.number,
-    y: PropTypes.number,
-    width: PropTypes.number,
-    height: PropTypes.number,
+    // eslint-disable-next-line react/forbid-prop-types
+    data: PropTypes.array.isRequired,
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired
   }
 
   render() {
@@ -85,19 +80,19 @@ class App extends React.Component {
     return (
       <Surface top={y} left={x} width={width} height={height}>
         <Heatmap
-          background={'blue'}
+          background="blue"
           style={{
             top: y,
             left: x,
-            width: width,
-            height: height,
+            width,
+            height,
             backgroundColor: 'green',
             borderColor: '#000',
             borderWidth: 1,
             shadowColor: '#999',
             shadowOffsetX: 15,
             shadowOffsetY: 15,
-            shadowBlur: 20,
+            shadowBlur: 20
           }}
           data={data}
         />
@@ -112,7 +107,7 @@ storiesOf('Heatmap', module).add('heatmap', () => {
     width: 800,
     x: 0,
     y: 0,
-    size: { width: 80, height: 80 },
+    size: { width: 80, height: 80 }
   }
   return (
     <div>

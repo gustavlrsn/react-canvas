@@ -32,10 +32,18 @@ export class RawImage extends CanvasComponent {
 export default class Image extends React.Component {
   static propTypes = {
     src: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
     style: PropTypes.object,
     useBackingStore: PropTypes.bool,
     fadeIn: PropTypes.bool,
-    fadeInDuration: PropTypes.number,
+    fadeInDuration: PropTypes.number
+  }
+
+  static defaultProps = {
+    useBackingStore: false,
+    fadeIn: false,
+    fadeInDuration: 0,
+    style: {}
   }
 
   constructor(props) {
@@ -43,13 +51,27 @@ export default class Image extends React.Component {
     const loaded = ImageCache.get(props.src).isLoaded()
 
     this.state = {
-      loaded: loaded,
-      imageAlpha: loaded ? 1 : 0,
+      loaded,
+      imageAlpha: loaded ? 1 : 0
     }
   }
 
   componentDidMount() {
     ImageCache.get(this.props.src).on('load', this.handleImageLoad)
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.src !== prevProps.src) {
+      ImageCache.get(prevProps.src).removeListener('load', this.handleImageLoad)
+      ImageCache.get(this.props.src).on('load', this.handleImageLoad)
+      const loaded = ImageCache.get(this.props.src).isLoaded()
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({ loaded })
+    }
+
+    if (this.rawImageRef) {
+      this.rawImageRef.getLayer().invalidateLayout()
+    }
   }
 
   componentWillUnmount() {
@@ -60,50 +82,12 @@ export default class Image extends React.Component {
     ImageCache.get(this.props.src).removeListener('load', this.handleImageLoad)
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.src !== prevProps.src) {
-      ImageCache.get(prevProps.src).removeListener('load', this.handleImageLoad)
-      ImageCache.get(this.props.src).on('load', this.handleImageLoad)
-      const loaded = ImageCache.get(this.props.src).isLoaded()
-      this.setState({ loaded: loaded })
-    }
-
-    if (this.rawImageRef) {
-      this.rawImageRef.getLayer().invalidateLayout()
-    }
+  setRawImageRef = ref => {
+    this.rawImageRef = ref
   }
 
-  setRawImageRef = ref => (this.rawImageRef = ref)
-  setGroupRef = ref => (this.groupRef = ref)
-
-  render() {
-    const imageStyle = Object.assign({}, this.props.style)
-    const style = Object.assign({}, this.props.style)
-    const backgroundStyle = Object.assign({}, this.props.style)
-    const useBackingStore = this.state.loaded
-      ? this.props.useBackingStore
-      : false
-
-    // Hide the image until loaded.
-    imageStyle.alpha = this.state.imageAlpha
-
-    // Hide opaque background if image loaded so that images with transparent
-    // do not render on top of solid color.
-    style.backgroundColor = imageStyle.backgroundColor = null
-    backgroundStyle.alpha = clamp(1 - this.state.imageAlpha, 0, 1)
-
-    return (
-      <Group ref={this.setGroupRef} style={style}>
-        <Group style={backgroundStyle} />
-
-        <RawImageName
-          ref={this.setRawImageRef}
-          src={this.props.src}
-          style={imageStyle}
-          useBackingStore={useBackingStore}
-        />
-      </Group>
-    )
+  setGroupRef = ref => {
+    this.groupRef = ref
   }
 
   handleImageLoad = () => {
@@ -115,7 +99,7 @@ export default class Image extends React.Component {
         this.stepThroughAnimation
       )
     }
-    this.setState({ loaded: true, imageAlpha: imageAlpha })
+    this.setState({ loaded: true, imageAlpha })
   }
 
   stepThroughAnimation = () => {
@@ -130,5 +114,36 @@ export default class Image extends React.Component {
         this.stepThroughAnimation
       )
     }
+  }
+
+  render() {
+    const imageStyle = Object.assign({}, this.props.style)
+    const style = Object.assign({}, this.props.style)
+    const backgroundStyle = Object.assign({}, this.props.style)
+    const useBackingStore = this.state.loaded
+      ? this.props.useBackingStore
+      : false
+
+    // Hide the image until loaded.
+    imageStyle.alpha = this.state.imageAlpha
+
+    // Hide opaque background if image loaded so that images with transparent
+    // do not render on top of solid color.
+    style.backgroundColor = null
+    imageStyle.backgroundColor = null
+    backgroundStyle.alpha = clamp(1 - this.state.imageAlpha, 0, 1)
+
+    return (
+      <Group ref={this.setGroupRef} style={style}>
+        <Group style={backgroundStyle} />
+
+        <RawImageName
+          ref={this.setRawImageRef}
+          src={this.props.src}
+          style={imageStyle}
+          useBackingStore={useBackingStore}
+        />
+      </Group>
+    )
   }
 }

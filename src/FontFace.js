@@ -1,4 +1,5 @@
 import MultiKeyCache from 'multi-key-cache'
+
 const _fontFaces = new MultiKeyCache()
 
 /**
@@ -49,7 +50,7 @@ function FontFace(family, url, attributes) {
  * @param {Number} fontWeight
  * @return {FontFace}
  */
-FontFace.Default = function(fontWeight) {
+FontFace.Default = fontWeight => {
   return FontFace('sans-serif', null, { weight: fontWeight })
 }
 

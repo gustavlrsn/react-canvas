@@ -12,15 +12,17 @@ RenderLayer.prototype = {
    *
    * @return {RenderLayer}
    */
-  reset: function(component) {
+  reset(component) {
     if (this.backingStoreId) {
       invalidateBackingStore(this.backingStoreId)
     }
 
     for (const key in this) {
+      // eslint-disable-next-line no-continue
       if (key === 'children' || key === 'frame' || key === 'component') continue
       const value = this[key]
 
+      // eslint-disable-next-line no-continue
       if (typeof value === 'function') continue
       this[key] = null
     }
@@ -48,7 +50,7 @@ RenderLayer.prototype = {
    *
    * @return {RenderLayer}
    */
-  getRootLayer: function() {
+  getRootLayer() {
     let root = this
     while (root.parentLayer) {
       root = root.parentLayer
@@ -62,7 +64,7 @@ RenderLayer.prototype = {
    *
    * @param {RenderLayer} parentLayer
    */
-  inject: function(parentLayer) {
+  inject(parentLayer) {
     if (this.parentLayer && this.parentLayer !== parentLayer) {
       this.remove()
     }
@@ -77,7 +79,7 @@ RenderLayer.prototype = {
    * @param {RenderLayer} parentLayer
    * @param {RenderLayer} referenceLayer
    */
-  injectBefore: function(parentLayer, beforeLayer) {
+  injectBefore(parentLayer, beforeLayer) {
     this.remove()
     const beforeIndex = parentLayer.children.indexOf(beforeLayer)
     parentLayer.children.splice(beforeIndex, 0, this)
@@ -90,7 +92,7 @@ RenderLayer.prototype = {
    *
    * @param {RenderLayer} child
    */
-  addChild: function(child) {
+  addChild(child) {
     child.parentLayer = this
     this.children.push(child)
   },
@@ -98,7 +100,7 @@ RenderLayer.prototype = {
   /**
    * Remove a layer from it's parent layer
    */
-  remove: function() {
+  remove() {
     if (this.parentLayer) {
       this.parentLayer.children.splice(
         this.parentLayer.children.indexOf(this),
@@ -112,7 +114,7 @@ RenderLayer.prototype = {
   /**
    * Move a layer to top.
    */
-  moveToTop: function() {
+  moveToTop() {
     if (
       this.parentLayer &&
       this.parentLayer.children.length > 1 &&
@@ -136,7 +138,7 @@ RenderLayer.prototype = {
    * @param {?Object} callbackScope
    * @return {Function} invoke to unsubscribe the listener
    */
-  subscribe: function(type, callback, callbackScope) {
+  subscribe(type, callback, callbackScope) {
     // This is the integration point with React, called from LayerMixin.putEventListener().
     // Enforce that only a single callbcak can be assigned per event type.
     for (const eventType in EventTypes) {
@@ -152,7 +154,7 @@ RenderLayer.prototype = {
   /**
    * @param {String} type
    */
-  destroyEventListeners: function() {
+  destroyEventListeners() {
     for (const eventType in EventTypes) {
       if (this[eventType]) {
         delete this[eventType]
@@ -165,7 +167,7 @@ RenderLayer.prototype = {
    * @param {Function} callback
    * @param {?Object} callbackScope
    */
-  removeEventListener: function(type, callback, callbackScope) {
+  removeEventListener(type, callback, callbackScope) {
     const listeners = this.eventListeners[type]
     let listener
     if (listeners) {
@@ -188,7 +190,7 @@ RenderLayer.prototype = {
    * @param {Number} x
    * @param {Number} y
    */
-  translate: function(x, y) {
+  translate(x, y) {
     if (this.frame) {
       this.frame.x += x
       this.frame.y += y
@@ -200,7 +202,7 @@ RenderLayer.prototype = {
     }
 
     if (this.children) {
-      this.children.forEach(function(child) {
+      this.children.forEach(child => {
         child.translate(x, y)
       })
     }
@@ -217,7 +219,7 @@ RenderLayer.prototype = {
    * @param {?Frame} frame Optional, if not passed the entire layer's frame
    *   will be invalidated.
    */
-  invalidateLayout: function() {
+  invalidateLayout() {
     // Bubble all the way to the root layer.
     this.getRootLayer().draw()
   },
@@ -227,7 +229,7 @@ RenderLayer.prototype = {
    * redrawn. For instance, an image component would call this once after the
    * image loads.
    */
-  invalidateBackingStore: function() {
+  invalidateBackingStore() {
     if (this.backingStoreId) {
       invalidateBackingStore(this.backingStoreId)
     }
@@ -237,9 +239,9 @@ RenderLayer.prototype = {
   /**
    * Only the root owning layer should implement this function.
    */
-  draw: function() {
+  draw() {
     // Placeholer
-  },
+  }
 }
 
 export default RenderLayer

@@ -10,14 +10,13 @@ storiesOf('Image', module).add('hello-world', () => {
         top={0}
         left={0}
         width={props.size.width}
-        height={props.size.height}
-      >
+        height={props.size.height}>
         <Image
           style={{
             top: 50,
             width: 200,
             height: 200,
-            left: 0,
+            left: 0
           }}
           src="https://i.imgur.com/U1p9DSP.png"
         />

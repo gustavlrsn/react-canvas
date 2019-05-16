@@ -105,7 +105,7 @@ function layerContainsFontFace(layer, fontFace) {
  * @param {String} imageUrl
  */
 function handleImageLoad(imageUrl) {
-  _backingStores.forEach(function(backingStore) {
+  _backingStores.forEach(backingStore => {
     if (layerContainsImage(backingStore.layer, imageUrl)) {
       invalidateBackingStore(backingStore.id)
     }
@@ -119,7 +119,7 @@ function handleImageLoad(imageUrl) {
  * @param {FontFace} fontFace
  */
 function handleFontLoad(fontFace) {
-  _backingStores.forEach(function(backingStore) {
+  _backingStores.forEach(backingStore => {
     if (layerContainsFontFace(backingStore.layer, fontFace)) {
       invalidateBackingStore(backingStore.id)
     }
@@ -134,7 +134,7 @@ function handleFontLoad(fontFace) {
  * @param {RenderLayer} layer
  */
 function drawBaseRenderLayer(ctx, layer) {
-  const frame = layer.frame
+  const { frame } = layer
 
   // Border radius:
   if (layer.borderRadius) {
@@ -260,7 +260,7 @@ function drawTextRenderLayer(ctx, layer) {
       fontSize: layer.fontSize,
       lineHeight: layer.lineHeight,
       textAlign: layer.textAlign,
-      color: layer.color,
+      color: layer.color
     }
   )
 }
@@ -294,16 +294,18 @@ const layerTypesToDrawFunction = {
   image: drawImageRenderLayer,
   text: drawTextRenderLayer,
   gradient: drawGradientRenderLayer,
-  group: drawBaseRenderLayer,
+  group: drawBaseRenderLayer
 }
 
 function getDrawFunction(type) {
+  // eslint-disable-next-line no-prototype-builtins
   return layerTypesToDrawFunction.hasOwnProperty(type)
     ? layerTypesToDrawFunction[type]
     : drawBaseRenderLayer
 }
 
 function registerLayerType(type, drawFunction) {
+  // eslint-disable-next-line no-prototype-builtins
   if (layerTypesToDrawFunction.hasOwnProperty(type)) {
     throw new Error(`type ${type} already registered`)
   }
@@ -319,10 +321,11 @@ function sortByZIndexAscending(layerA, layerB) {
 }
 
 let drawCacheableRenderLayer = null
+// eslint-disable-next-line import/no-mutable-exports
 let drawRenderLayer = null
 
 function drawChildren(layer, ctx) {
-  const children = layer.children
+  const { children } = layer
   if (children.length === 0) return
 
   // Opimization
@@ -343,9 +346,7 @@ function drawChildren(layer, ctx) {
     children
       .slice()
       .sort(sortByZIndexAscending)
-      .forEach(function(childLayer) {
-        drawRenderLayer(ctx, childLayer)
-      })
+      .forEach(childLayer => drawRenderLayer(ctx, childLayer))
   }
 }
 
@@ -392,6 +393,7 @@ drawRenderLayer = (ctx, layer) => {
     ctx.save()
 
     // Draw
+    // eslint-disable-next-line no-unused-expressions
     drawFunction && drawFunction(ctx, layer)
     ctx.restore()
 
@@ -449,8 +451,8 @@ drawCacheableRenderLayer = (ctx, layer, drawFunction) => {
       )
       _backingStores.push({
         id: layer.backingStoreId,
-        layer: layer,
-        canvas: backingStore,
+        layer,
+        canvas: backingStore
       })
     }
 
@@ -463,6 +465,7 @@ drawCacheableRenderLayer = (ctx, layer, drawFunction) => {
     backingContext.save()
 
     // Custom drawing operations
+    // eslint-disable-next-line no-unused-expressions
     drawFunction && drawFunction(backingContext, layer)
     backingContext.restore()
 
@@ -512,5 +515,5 @@ export {
   handleFontLoad,
   layerContainsImage,
   layerContainsFontFace,
-  registerLayerType,
+  registerLayerType
 }

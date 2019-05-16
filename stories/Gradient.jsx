@@ -11,18 +11,17 @@ storiesOf('Gradient', module)
           top={0}
           left={0}
           width={props.size.width}
-          height={props.size.height}
-        >
+          height={props.size.height}>
           <Gradient
             style={{
               top: 0,
               left: 0,
               width: props.size.width,
-              height: props.size.height,
+              height: props.size.height
             }}
             colorStops={[
               { color: 'transparent', position: 0 },
-              { color: '#000', position: 1 },
+              { color: '#000', position: 1 }
             ]}
           />
         </Surface>
@@ -37,18 +36,17 @@ storiesOf('Gradient', module)
           top={0}
           left={0}
           width={props.size.width}
-          height={props.size.height}
-        >
+          height={props.size.height}>
           <Gradient
             style={{
               top: 0,
               left: 0,
               width: props.size.width,
-              height: props.size.height,
+              height: props.size.height
             }}
             colorStops={[
               { color: '#00FF00', position: 0 },
-              { color: '#0000FF', position: 1 },
+              { color: '#0000FF', position: 1 }
             ]}
           />
         </Surface>

@@ -11,12 +11,12 @@ export default class CanvasComponent {
     this.subscriptions = new Map()
     this.listeners = new Map()
     this.node = new RenderLayer(this)
-    this._layerId = LAYER_GUID++
+    this._layerId = LAYER_GUID
+    LAYER_GUID += 1
   }
 
   putEventListener = (type, listener) => {
-    const subscriptions = this.subscriptions
-    const listeners = this.listeners
+    const { listeners, subscriptions } = this
 
     let isListenerDifferent = false
     if (listeners.get(type) !== listener) {
@@ -49,6 +49,7 @@ export default class CanvasComponent {
     let style = emptyObject
 
     if (props.style) {
+      // eslint-disable-next-line prefer-destructuring
       style = props.style
       layer._originalStyle = style
     } else {
@@ -59,7 +60,7 @@ export default class CanvasComponent {
       layer.frame = make(0, 0, 0, 0)
     }
 
-    const frame = layer.frame
+    const { frame } = layer
     const l = style.left || 0
     const t = style.top || 0
     const w = style.width || 0

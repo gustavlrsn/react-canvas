@@ -1,6 +1,6 @@
-import { isFontLoaded } from './FontUtils'
 import LineBreaker from '@craigmorton/linebreak'
 import MultiKeyCache from 'multi-key-cache'
+import { isFontLoaded } from './FontUtils'
 
 const canvas = document.createElement('canvas')
 const ctx = canvas.getContext('2d')
@@ -9,7 +9,7 @@ const _cache = new MultiKeyCache()
 const _zeroMetrics = {
   width: 0,
   height: 0,
-  lines: [],
+  lines: []
 }
 
 /**
@@ -49,14 +49,9 @@ export default function measureText(
   let bk
   let lastBreak
 
-  ctx.font =
-    fontFace.attributes.style +
-    ' normal ' +
-    fontFace.attributes.weight +
-    ' ' +
-    fontSize +
-    'px ' +
-    fontFace.family
+  ctx.font = `${fontFace.attributes.style} normal ${
+    fontFace.attributes.weight
+  } ${fontSize}px ${fontFace.family}`
   textMetrics = ctx.measureText(text)
 
   measuredSize.width = textMetrics.width
@@ -65,13 +60,14 @@ export default function measureText(
 
   if (measuredSize.width <= width) {
     // The entire text string fits.
-    measuredSize.lines.push({ width: measuredSize.width, text: text })
+    measuredSize.lines.push({ width: measuredSize.width, text })
   } else {
     // Break into multiple lines.
     measuredSize.width = width
     currentLine = ''
     breaker = new LineBreaker(text)
 
+    // eslint-disable-next-line no-cond-assign
     while ((bk = breaker.nextBreak())) {
       const word = text.slice(lastBreak ? lastBreak.position : 0, bk.position)
 
@@ -81,7 +77,7 @@ export default function measureText(
         measuredSize.height += lineHeight
         measuredSize.lines.push({
           width: lastMeasuredWidth,
-          text: currentLine.trim(),
+          text: currentLine.trim()
         })
         currentLine = word
         lastMeasuredWidth = ctx.measureText(currentLine.trim()).width

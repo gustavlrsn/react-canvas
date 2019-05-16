@@ -36,11 +36,11 @@ function drawImage(ctx, image, x, y, width, height, options) {
   let sw = 0
   let sh = 0
   let scale
-  let focusPoint = options.focusPoint
+  let { focusPoint } = options
 
   const actualSize = {
     width: image.getWidth(),
-    height: image.getHeight(),
+    height: image.getHeight()
   }
 
   scale = Math.max(width / actualSize.width, height / actualSize.height) || 1
@@ -48,7 +48,7 @@ function drawImage(ctx, image, x, y, width, height, options) {
 
   const scaledSize = {
     width: actualSize.width * scale,
-    height: actualSize.height * scale,
+    height: actualSize.height * scale
   }
 
   if (focusPoint) {
@@ -62,7 +62,7 @@ function drawImage(ctx, image, x, y, width, height, options) {
     // Default focal point to [0.5, 0.5]
     focusPoint = {
       x: actualSize.width * 0.5,
-      y: actualSize.height * 0.5,
+      y: actualSize.height * 0.5
     }
   }
 
@@ -135,16 +135,11 @@ function drawText(ctx, text, x, y, width, height, fontFace, _options) {
   }
 
   ctx.fillStyle = options.color
-  ctx.font =
-    fontFace.attributes.style +
-    ' normal ' +
-    fontFace.attributes.weight +
-    ' ' +
-    options.fontSize +
-    'px ' +
-    fontFace.family
+  ctx.font = `${fontFace.attributes.style} normal ${
+    fontFace.attributes.weight
+  } ${options.fontSize}px ${fontFace.family}`
 
-  textMetrics.lines.forEach(function(line, index) {
+  textMetrics.lines.forEach((line, index) => {
     currText = line.text
     currY =
       index === 0
@@ -196,7 +191,7 @@ function drawGradient(ctx, x1, y1, x2, y2, colorStops, x, y, width, height) {
   ctx.save()
   const grad = ctx.createLinearGradient(x1, y1, x2, y2)
 
-  colorStops.forEach(function(colorStop) {
+  colorStops.forEach(colorStop => {
     grad.addColorStop(colorStop.position, colorStop.color)
   })
 

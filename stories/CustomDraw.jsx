@@ -1,15 +1,10 @@
 import React from 'react'
 import { storiesOf } from '@storybook/react'
 
-import ReactCanvas from '../src/index'
+import { Surface, registerCustomComponent } from '../src/index'
 
-const { Surface } = ReactCanvas
-
-const circleDraw = function(ctx, layer) {
-  const x = layer.frame.x
-  const y = layer.frame.y
-  const width = layer.frame.width
-  const height = layer.frame.height
+const circleDraw = function draw(ctx, layer) {
+  const { x, y, width, height } = layer.frame
   const centerX = x + width / 2
   const centerY = y + height / 2
 
@@ -42,25 +37,21 @@ const circleDraw = function(ctx, layer) {
   }
 }
 
-const circleApplyProps = (layer, style /*, prevProps, props*/) => {
+const circleApplyProps = (layer, style /* , prevProps, props */) => {
   layer.shadowColor = style.shadowColor || 0
   layer.shadowOffsetX = style.shadowOffsetX || 0
   layer.shadowOffsetY = style.shadowOffsetY || 0
   layer.shadowBlur = style.shadowBlur || 0
 }
 
-const Circle = ReactCanvas.registerCustomComponent(
-  'Circle',
-  circleApplyProps,
-  circleDraw
-)
+const Circle = registerCustomComponent('Circle', circleApplyProps, circleDraw)
 
 class App extends React.Component {
   render() {
     return (
       <Surface top={10} left={10} width={500} height={500}>
         <Circle
-          background={'blue'}
+          background="blue"
           style={{
             top: 10,
             left: 10,
@@ -72,7 +63,7 @@ class App extends React.Component {
             shadowColor: '#999',
             shadowOffsetX: 15,
             shadowOffsetY: 15,
-            shadowBlur: 20,
+            shadowBlur: 20
           }}
         />
       </Surface>

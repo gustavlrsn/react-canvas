@@ -56,13 +56,13 @@ React Canvas provides a set of standard React components that abstract the under
 
 ### &lt;Gradient&gt;
 
-**Gradient** can be used to set the background of a group or surface. 
+**Gradient** can be used to set the background of a group or surface.
 ```javascript
   render() {
     ...
     return (
       <Group style={this.getStyle()}>
-        <Gradient style={this.getGradientStyle()} 
+        <Gradient style={this.getGradientStyle()}
                   colorStops={this.getGradientColors()} />
       </Group>
     );
@@ -73,11 +73,7 @@ React Canvas provides a set of standard React components that abstract the under
       { color: "#000", position: 1 }
     ]
   }
-``` 
-
-### &lt;ListView&gt;
-
-**ListView** is a touch scrolling container that renders a list of elements in a column. Think of it like UITableView for the web. It leverages many of the same optimizations that make table views on iOS and list views on Android fast.
+```
 
 ## Events
 
@@ -141,47 +137,6 @@ var MyComponent = React.createClass({
 
 });
 ```
-
-## ListView
-
-Many mobile interfaces involve an infinitely long scrolling list of items. React Canvas provides the ListView component to do just that.
-
-Because ListView virtualizes elements outside of the viewport, passing children to it is different than a normal React component where children are declared in render().
-
-The `numberOfItemsGetter`, `itemHeightGetter` and `itemGetter` props are all required.
-
-```javascript
-var ListView = ReactCanvas.ListView;
-
-var MyScrollingListView = React.createClass({
-
-  render: function () {
-    return (
-      <ListView
-        numberOfItemsGetter={this.getNumberOfItems}
-        itemHeightGetter={this.getItemHeight}
-        itemGetter={this.renderItem} />
-    );
-  },
-
-  getNumberOfItems: function () {
-    // Return the total number of items in the list
-  },
-
-  getItemHeight: function () {
-    // Return the height of a single item
-  },
-
-  renderItem: function (index) {
-    // Render the item at the given index, usually a <Group>
-  },
-
-});
-```
-
-See the [timeline example](examples/timeline/app.js) for a more complete example.
-
-Currently, ListView requires that each item is of the same height. Future versions will support variable height items.
 
 ## Text sizing
 
