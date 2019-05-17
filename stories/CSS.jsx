@@ -94,7 +94,7 @@ class App extends React.Component {
           <Text style={this.getTitleStyle()}>Professor PuddinPop</Text>
           <Group style={this.getImageGroupStyle()}>
             <Image
-              src="http://lorempixel.com/360/420/cats/1/"
+              src="https://i.imgur.com/U1p9DSP.png"
               style={this.getImageStyle()}
               fadeIn
             />
