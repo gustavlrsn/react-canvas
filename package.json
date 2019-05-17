@@ -54,8 +54,8 @@
     "react-dom": "^16.8.6"
   },
   "dependencies": {
-    "@craigmorton/linebreak": "^0.4.5",
     "css-layout": "^1.1.1",
+    "css-line-break": "^1.1.1",
     "invariant": "^2.2.4",
     "multi-key-cache": "^1.0.2",
     "prop-types": "^15.6.1",

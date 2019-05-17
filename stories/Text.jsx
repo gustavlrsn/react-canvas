@@ -31,11 +31,23 @@ storiesOf('Text', module).add('hello-world', () => {
             }}>
             Hello World 2
           </Text>
+          <Text
+            style={{
+              top: 50,
+              left: 0,
+              color: 'red',
+              width: 20,
+              height: 100
+            }}>
+            Long text in with small width paramter
+          </Text>
 
           <Image
             style={{
-              top: 50,
-              left: 0
+              top: 200,
+              left: 0,
+              width: 200,
+              height: 200
             }}
             src="https://i.imgur.com/U1p9DSP.png"
           />

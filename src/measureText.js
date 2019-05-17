@@ -1,5 +1,6 @@
-import LineBreaker from '@craigmorton/linebreak'
+import { LineBreaker } from 'css-line-break'
 import MultiKeyCache from 'multi-key-cache'
+
 import { isFontLoaded } from './FontUtils'
 
 const canvas = document.createElement('canvas')
@@ -45,9 +46,7 @@ export default function measureText(
   let lastMeasuredWidth
   let tryLine
   let currentLine
-  let breaker
   let bk
-  let lastBreak
 
   ctx.font = `${fontFace.attributes.style} normal ${
     fontFace.attributes.weight
@@ -65,15 +64,17 @@ export default function measureText(
     // Break into multiple lines.
     measuredSize.width = width
     currentLine = ''
-    breaker = new LineBreaker(text)
+    const breaker = LineBreaker(text, {
+      lineBreak: 'strict',
+      wordBreak: 'normal'
+    })
 
     // eslint-disable-next-line no-cond-assign
-    while ((bk = breaker.nextBreak())) {
-      const word = text.slice(lastBreak ? lastBreak.position : 0, bk.position)
-
+    while (!(bk = breaker.next()).done) {
+      const word = bk.value.slice()
       tryLine = currentLine + word
       textMetrics = ctx.measureText(tryLine)
-      if (textMetrics.width > width || (lastBreak && lastBreak.required)) {
+      if (textMetrics.width > width) {
         measuredSize.height += lineHeight
         measuredSize.lines.push({
           width: lastMeasuredWidth,
@@ -85,8 +86,6 @@ export default function measureText(
         currentLine = tryLine
         lastMeasuredWidth = textMetrics.width
       }
-
-      lastBreak = bk
     }
 
     currentLine = currentLine.trim()
