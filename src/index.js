@@ -1,8 +1,7 @@
 import Surface from './Surface'
-import Core from './Core'
+import { Group, Text, Layer, Gradient } from './Core'
 import Image from './Image'
 import FontFace from './FontFace'
-import FrameUtils from './FrameUtils'
 import measureText from './measureText'
 import CanvasComponent from './CanvasComponent'
 import { CanvasRenderer, registerComponentConstructor } from './CanvasRenderer'
@@ -32,32 +31,14 @@ const registerCustomComponent = (name, applyProps, drawFunction) => {
   return name
 }
 
-const ReactCanvas = {
-  ...Core,
-  Surface,
-  Image,
-  FontFace,
-  FrameUtils,
-  measureText,
-  registerCustomComponent
-}
-
-// eslint-disable-next-line prefer-destructuring
-export const Text = ReactCanvas.Text
-// eslint-disable-next-line prefer-destructuring
-export const Group = ReactCanvas.Group
-// eslint-disable-next-line prefer-destructuring
-export const Gradient = ReactCanvas.Gradient
-// eslint-disable-next-line prefer-destructuring
-export const Layer = ReactCanvas.Layer
-
 export {
+  Group,
+  Text,
+  Layer,
+  Gradient,
   Surface,
   Image,
   FontFace,
-  FrameUtils,
   measureText,
   registerCustomComponent
 }
-
-export default ReactCanvas

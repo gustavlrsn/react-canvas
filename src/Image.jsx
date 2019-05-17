@@ -1,13 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import CanvasComponent from './CanvasComponent'
-import Core from './Core'
+import { Group } from './Core'
 import ImageCache from './ImageCache'
 import { easeInCubic } from './Easing'
 import clamp from './clamp'
 
 const RawImageName = 'RawImage'
-const { Group } = Core
 
 const FADE_DURATION = 200
 
