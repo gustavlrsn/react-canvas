@@ -1,59 +1,59 @@
-import CanvasComponent from "./CanvasComponent";
+import CanvasComponent from './CanvasComponent'
 
 function childrenAsString(children) {
   if (!children) {
-    return "";
+    return ''
   }
-  if (typeof children === "string") {
-    return children;
+  if (typeof children === 'string') {
+    return children
   }
   if (children.length) {
-    return children.join("\n");
+    return children.join('\n')
   }
-  return "";
+  return ''
 }
 
 function textArraysEqual(a, b) {
-  if (typeof a !== typeof b || a.length !== b.length) return false;
+  if (typeof a !== typeof b || a.length !== b.length) return false
 
   for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) return false;
+    if (a[i] !== b[i]) return false
   }
 
-  return true;
+  return true
 }
 
-const LAYER_TYPE = "text";
+const LAYER_TYPE = 'text'
 
 class Text extends CanvasComponent {
   applyLayerProps = (prevProps, props) => {
-    const style = props && props.style ? props.style : {};
-    const layer = this.node;
+    const style = props && props.style ? props.style : {}
+    const layer = this.node
 
     if (layer.type !== LAYER_TYPE) {
-      layer.type = LAYER_TYPE;
+      layer.type = LAYER_TYPE
     }
 
     if (
       layer.text === null ||
       !textArraysEqual(prevProps.children, props.children)
     ) {
-      layer.text = childrenAsString(props.children);
+      layer.text = childrenAsString(props.children)
     }
 
-    if (layer.color !== style.color) layer.color = style.color;
+    if (layer.color !== style.color) layer.color = style.color
 
-    if (layer.fontFace !== style.fontFace) layer.fontFace = style.fontFace;
+    if (layer.fontFace !== style.fontFace) layer.fontFace = style.fontFace
 
-    if (layer.fontSize !== style.fontSize) layer.fontSize = style.fontSize;
+    if (layer.fontSize !== style.fontSize) layer.fontSize = style.fontSize
 
     if (layer.lineHeight !== style.lineHeight)
-      layer.lineHeight = style.lineHeight;
+      layer.lineHeight = style.lineHeight
 
-    if (layer.textAlign !== style.textAlign) layer.textAlign = style.textAlign;
+    if (layer.textAlign !== style.textAlign) layer.textAlign = style.textAlign
 
-    this.applyCommonLayerProps(prevProps, props);
-  };
+    this.applyCommonLayerProps(prevProps, props)
+  }
 }
 
-export default Text;
+export default Text

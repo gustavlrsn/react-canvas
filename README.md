@@ -1,12 +1,12 @@
 # react-canvas
 
-This is a fork of [Flipboard/react-canvas](https://github.com/Flipboard/react-canvas) which:
-- Upgrades to React 16 and uses a custom renderer with `react-reconciler`
-- Converts to ES modules and modern ES6+
-- Storybook for ease of testing examples
-- Removes the need to use [brfs](https://github.com/substack/brfs) and `transform-loader` when using webpack.
+`react-canvas` fork which supports React 18.6.8 using custom fiber renderer.
 
-This fork builds upon work by [CraigMorton](https://github.com/CraigMorton/react-canvas) and [CSBerger](https://github.com/CSberger/react-canvas)
+Previous work / forks:
+
+- [Flipboard/react-canvas](https://github.com/Flipboard/react-canvas)
+- [CraigMorton/react-canvas](https://github.com/CraigMorton/react-canvas)
+- [CSBerger/react-canvas](https://github.com/CSberger/react-canvas)
 
 # Original repo's README
 
@@ -26,9 +26,7 @@ React Canvas brings some of the APIs web developers are familiar with and blends
 
 ## Installation
 
-React Canvas is available through npm:
-
-```npm install react-canvas```
+`yarn add react-canvas`
 
 ## React Canvas Components
 
@@ -56,28 +54,27 @@ React Canvas provides a set of standard React components that abstract the under
 
 ### &lt;Gradient&gt;
 
-**Gradient** can be used to set the background of a group or surface. 
+**Gradient** can be used to set the background of a group or surface.
+
 ```javascript
   render() {
     ...
     return (
       <Group style={this.getStyle()}>
-        <Gradient style={this.getGradientStyle()} 
-                  colorStops={this.getGradientColors()} />
+        <Gradient
+          style={this.getGradientStyle()}
+          colorStops={this.getGradientColors()} />
       </Group>
-    );
+    )
   }
-  getGradientColors(){
+
+  getGradientColors() {
     return [
       { color: "transparent", position: 0 },
       { color: "#000", position: 1 }
     ]
   }
-``` 
-
-### &lt;ListView&gt;
-
-**ListView** is a touch scrolling container that renders a list of elements in a column. Think of it like UITableView for the web. It leverages many of the same optimizations that make table views on iOS and list views on Android fast.
+```
 
 ## Events
 
@@ -90,45 +87,24 @@ For a full list of supported events see [EventTypes](lib/EventTypes.js).
 Here is a very simple component that renders text below an image:
 
 ```javascript
-var React = require('react');
-var ReactCanvas = require('react-canvas');
+import React from 'react'
+import { Surface, Image, Text } from 'react-canvas'
 
-var Surface = ReactCanvas.Surface;
-var Image = ReactCanvas.Image;
-var Text = ReactCanvas.Text;
+class MyComponent extends React.Component {
+  getImageHeight() {
+    return Math.round(window.innerHeight / 2)
+  }
 
-var MyComponent = React.createClass({
-
-  render: function () {
-    var surfaceWidth = window.innerWidth;
-    var surfaceHeight = window.innerHeight;
-    var imageStyle = this.getImageStyle();
-    var textStyle = this.getTextStyle();
-
-    return (
-      <Surface width={surfaceWidth} height={surfaceHeight} left={0} top={0}>
-        <Image style={imageStyle} src='...' />
-        <Text style={textStyle}>
-          Here is some text below an image.
-        </Text>
-      </Surface>
-    );
-  },
-
-  getImageHeight: function () {
-    return Math.round(window.innerHeight / 2);
-  },
-
-  getImageStyle: function () {
+  getImageStyle() {
     return {
       top: 0,
       left: 0,
       width: window.innerWidth,
       height: this.getImageHeight()
-    };
-  },
+    }
+  }
 
-  getTextStyle: function () {
+  getTextStyle() {
     return {
       top: this.getImageHeight() + 10,
       left: 0,
@@ -136,58 +112,28 @@ var MyComponent = React.createClass({
       height: 20,
       lineHeight: 20,
       fontSize: 12
-    };
+    }
   }
 
-});
-```
+  render() {
+    const surfaceWidth = window.innerWidth
+    const surfaceHeight = window.innerHeight
+    const imageStyle = this.getImageStyle()
+    const textStyle = this.getTextStyle()
 
-## ListView
-
-Many mobile interfaces involve an infinitely long scrolling list of items. React Canvas provides the ListView component to do just that.
-
-Because ListView virtualizes elements outside of the viewport, passing children to it is different than a normal React component where children are declared in render().
-
-The `numberOfItemsGetter`, `itemHeightGetter` and `itemGetter` props are all required.
-
-```javascript
-var ListView = ReactCanvas.ListView;
-
-var MyScrollingListView = React.createClass({
-
-  render: function () {
     return (
-      <ListView
-        numberOfItemsGetter={this.getNumberOfItems}
-        itemHeightGetter={this.getItemHeight}
-        itemGetter={this.renderItem} />
-    );
-  },
-
-  getNumberOfItems: function () {
-    // Return the total number of items in the list
-  },
-
-  getItemHeight: function () {
-    // Return the height of a single item
-  },
-
-  renderItem: function (index) {
-    // Render the item at the given index, usually a <Group>
-  },
-
-});
+      <Surface width={surfaceWidth} height={surfaceHeight} left={0} top={0}>
+        <Image style={imageStyle} src="..." />
+        <Text style={textStyle}>Here is some text below an image.</Text>
+      </Surface>
+    )
+  }
+}
 ```
-
-See the [timeline example](examples/timeline/app.js) for a more complete example.
-
-Currently, ListView requires that each item is of the same height. Future versions will support variable height items.
 
 ## Text sizing
 
 React Canvas provides the `measureText` function for computing text metrics.
-
-The [Page component](examples/timeline/components/Page.js) in the timeline example contains an example of using measureText to achieve precise multi-line ellipsized text.
 
 Custom fonts are not currently supported but will be added in a future version.
 
@@ -199,43 +145,9 @@ Future versions may not support css-layout out of the box. The performance impli
 
 See the [css-layout example](examples/css-layout).
 
-## Accessibility
-
-This area needs further exploration. Using fallback content (the canvas DOM sub-tree) should allow screen readers such as VoiceOver to interact with the content. We've seen mixed results with the iOS devices we've tested. Additionally there is a standard for [focus management](http://www.w3.org/TR/2010/WD-2dcontext-20100304/#dom-context-2d-drawfocusring) that is not supported by browsers yet.
-
-One approach that was raised by [Bespin](http://vimeo.com/3195079) in 2009 is to keep a [parallel DOM](http://robertnyman.com/2009/04/03/mozilla-labs-online-code-editor-bespin/#comment-560310) in sync with the elements rendered in canvas.
-
-## Running the examples
+## Running the examples (storybook)
 
 ```
-npm install
-npm start
+yarn install --pure-lockfile
+yarn storybook
 ```
-
-This will start a live reloading server on port 8080. To override the default server and live reload ports, run `npm start` with PORT and/or RELOAD_PORT environment variables.
-
-**A note on NODE_ENV and React**: running the examples with `NODE_ENV=production` will noticeably improve scrolling performance. This is because React skips propType validation in production mode.
-
-
-## Using with webpack
-
-The [brfs](https://github.com/substack/brfs) transform is required in order to use the project with webpack.
-
-```bash
-npm install -g brfs
-npm install --save-dev transform-loader brfs
-```
-
-Then add the [brfs](https://github.com/substack/brfs) transform to your webpack config
-
-```javascript
-module: {
-  postLoaders: [
-    { loader: "transform?brfs" }
-  ]
-}
-```
-
-## Contributing
-
-We welcome pull requests for bug fixes, new features, and improvements to React Canvas. Contributors to the main repository must accept Flipboard's Apache-style [Individual Contributor License Agreement (CLA)](https://docs.google.com/forms/d/1gh9y6_i8xFn6pA15PqFeye19VqasuI9-bGp_e0owy74/viewform) before any changes can be merged.

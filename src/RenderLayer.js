@@ -1,9 +1,9 @@
-import { zero } from "./FrameUtils";
-import { invalidateBackingStore } from "./DrawingUtils";
-import * as EventTypes from "./EventTypes";
+import { zero } from './FrameUtils'
+import { invalidateBackingStore } from './DrawingUtils'
+import * as EventTypes from './EventTypes'
 
 function RenderLayer(component) {
-  this.reset(component);
+  this.reset(component)
 }
 
 RenderLayer.prototype = {
@@ -12,36 +12,37 @@ RenderLayer.prototype = {
    *
    * @return {RenderLayer}
    */
-  reset: function(component) {
+  reset(component) {
     if (this.backingStoreId) {
-      invalidateBackingStore(this.backingStoreId);
+      invalidateBackingStore(this.backingStoreId)
     }
 
     for (const key in this) {
-      if (key === "children" || key === "frame" || key === "component")
-        continue;
-      const value = this[key];
+      // eslint-disable-next-line no-continue
+      if (key === 'children' || key === 'frame' || key === 'component') continue
+      const value = this[key]
 
-      if (typeof value === "function") continue;
-      this[key] = null;
+      // eslint-disable-next-line no-continue
+      if (typeof value === 'function') continue
+      this[key] = null
     }
 
     if (this.children) {
-      this.children.length = 0;
+      this.children.length = 0
     } else {
-      this.children = [];
+      this.children = []
     }
 
     if (this.frame) {
-      this.frame.x = null;
-      this.frame.y = null;
-      this.frame.width = null;
-      this.frame.height = null;
+      this.frame.x = null
+      this.frame.y = null
+      this.frame.width = null
+      this.frame.height = null
     } else {
-      this.frame = zero();
+      this.frame = zero()
     }
 
-    this.component = component;
+    this.component = component
   },
 
   /**
@@ -49,12 +50,12 @@ RenderLayer.prototype = {
    *
    * @return {RenderLayer}
    */
-  getRootLayer: function() {
-    let root = this;
+  getRootLayer() {
+    let root = this
     while (root.parentLayer) {
-      root = root.parentLayer;
+      root = root.parentLayer
     }
-    return root;
+    return root
   },
 
   /**
@@ -63,12 +64,12 @@ RenderLayer.prototype = {
    *
    * @param {RenderLayer} parentLayer
    */
-  inject: function(parentLayer) {
+  inject(parentLayer) {
     if (this.parentLayer && this.parentLayer !== parentLayer) {
-      this.remove();
+      this.remove()
     }
     if (!this.parentLayer) {
-      parentLayer.addChild(this);
+      parentLayer.addChild(this)
     }
   },
 
@@ -78,12 +79,12 @@ RenderLayer.prototype = {
    * @param {RenderLayer} parentLayer
    * @param {RenderLayer} referenceLayer
    */
-  injectBefore: function(parentLayer, beforeLayer) {
-    this.remove();
-    const beforeIndex = parentLayer.children.indexOf(beforeLayer);
-    parentLayer.children.splice(beforeIndex, 0, this);
-    this.parentLayer = parentLayer;
-    this.zIndex = this.zIndex || beforeLayer.zIndex || 0;
+  injectBefore(parentLayer, beforeLayer) {
+    this.remove()
+    const beforeIndex = parentLayer.children.indexOf(beforeLayer)
+    parentLayer.children.splice(beforeIndex, 0, this)
+    this.parentLayer = parentLayer
+    this.zIndex = this.zIndex || beforeLayer.zIndex || 0
   },
 
   /**
@@ -91,29 +92,29 @@ RenderLayer.prototype = {
    *
    * @param {RenderLayer} child
    */
-  addChild: function(child) {
-    child.parentLayer = this;
-    this.children.push(child);
+  addChild(child) {
+    child.parentLayer = this
+    this.children.push(child)
   },
 
   /**
    * Remove a layer from it's parent layer
    */
-  remove: function() {
+  remove() {
     if (this.parentLayer) {
       this.parentLayer.children.splice(
         this.parentLayer.children.indexOf(this),
         1
-      );
+      )
 
-      this.parentLayer = null;
+      this.parentLayer = null
     }
   },
 
   /**
    * Move a layer to top.
    */
-  moveToTop: function() {
+  moveToTop() {
     if (
       this.parentLayer &&
       this.parentLayer.children.length > 1 &&
@@ -122,9 +123,9 @@ RenderLayer.prototype = {
       this.parentLayer.children.splice(
         this.parentLayer.children.indexOf(this),
         1
-      );
+      )
 
-      this.parentLayer.children.unshift(this);
+      this.parentLayer.children.unshift(this)
     }
   },
 
@@ -137,26 +138,26 @@ RenderLayer.prototype = {
    * @param {?Object} callbackScope
    * @return {Function} invoke to unsubscribe the listener
    */
-  subscribe: function(type, callback, callbackScope) {
+  subscribe(type, callback, callbackScope) {
     // This is the integration point with React, called from LayerMixin.putEventListener().
     // Enforce that only a single callbcak can be assigned per event type.
     for (const eventType in EventTypes) {
       if (EventTypes[eventType] === type) {
-        this[eventType] = callback;
+        this[eventType] = callback
       }
     }
 
     // Return a function that can be called to unsubscribe from the event.
-    return this.removeEventListener.bind(this, type, callback, callbackScope);
+    return this.removeEventListener.bind(this, type, callback, callbackScope)
   },
 
   /**
    * @param {String} type
    */
-  destroyEventListeners: function() {
+  destroyEventListeners() {
     for (const eventType in EventTypes) {
       if (this[eventType]) {
-        delete this[eventType];
+        delete this[eventType]
       }
     }
   },
@@ -166,18 +167,18 @@ RenderLayer.prototype = {
    * @param {Function} callback
    * @param {?Object} callbackScope
    */
-  removeEventListener: function(type, callback, callbackScope) {
-    const listeners = this.eventListeners[type];
-    let listener;
+  removeEventListener(type, callback, callbackScope) {
+    const listeners = this.eventListeners[type]
+    let listener
     if (listeners) {
       for (let index = 0, len = listeners.length; index < len; index++) {
-        listener = listeners[index];
+        listener = listeners[index]
         if (
           listener.callback === callback &&
           listener.callbackScope === callbackScope
         ) {
-          listeners.splice(index, 1);
-          break;
+          listeners.splice(index, 1)
+          break
         }
       }
     }
@@ -189,21 +190,21 @@ RenderLayer.prototype = {
    * @param {Number} x
    * @param {Number} y
    */
-  translate: function(x, y) {
+  translate(x, y) {
     if (this.frame) {
-      this.frame.x += x;
-      this.frame.y += y;
+      this.frame.x += x
+      this.frame.y += y
     }
 
     if (this.clipRect) {
-      this.clipRect.x += x;
-      this.clipRect.y += y;
+      this.clipRect.x += x
+      this.clipRect.y += y
     }
 
     if (this.children) {
-      this.children.forEach(function(child) {
-        child.translate(x, y);
-      });
+      this.children.forEach(child => {
+        child.translate(x, y)
+      })
     }
   },
 
@@ -218,9 +219,9 @@ RenderLayer.prototype = {
    * @param {?Frame} frame Optional, if not passed the entire layer's frame
    *   will be invalidated.
    */
-  invalidateLayout: function() {
+  invalidateLayout() {
     // Bubble all the way to the root layer.
-    this.getRootLayer().draw();
+    this.getRootLayer().draw()
   },
 
   /**
@@ -228,19 +229,19 @@ RenderLayer.prototype = {
    * redrawn. For instance, an image component would call this once after the
    * image loads.
    */
-  invalidateBackingStore: function() {
+  invalidateBackingStore() {
     if (this.backingStoreId) {
-      invalidateBackingStore(this.backingStoreId);
+      invalidateBackingStore(this.backingStoreId)
     }
-    this.invalidateLayout();
+    this.invalidateLayout()
   },
 
   /**
    * Only the root owning layer should implement this function.
    */
-  draw: function() {
+  draw() {
     // Placeholer
   }
-};
+}
 
-export default RenderLayer;
+export default RenderLayer

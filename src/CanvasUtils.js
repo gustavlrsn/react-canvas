@@ -1,5 +1,5 @@
-import clamp from "./clamp";
-import measureText from "./measureText";
+import clamp from './clamp'
+import measureText from './measureText'
 
 /**
  * Draw an image into a <canvas>. This operation requires that the image
@@ -18,52 +18,52 @@ import measureText from "./measureText";
  *   {String} backgroundColor
  */
 function drawImage(ctx, image, x, y, width, height, options) {
-  options = options || {};
+  options = options || {}
 
   if (options.backgroundColor) {
-    ctx.save();
-    ctx.fillStyle = options.backgroundColor;
-    ctx.fillRect(x, y, width, height);
-    ctx.restore();
+    ctx.save()
+    ctx.fillStyle = options.backgroundColor
+    ctx.fillRect(x, y, width, height)
+    ctx.restore()
   }
 
-  let dx = 0;
-  let dy = 0;
-  let dw = 0;
-  let dh = 0;
-  let sx = 0;
-  let sy = 0;
-  let sw = 0;
-  let sh = 0;
-  let scale;
-  let focusPoint = options.focusPoint;
+  let dx = 0
+  let dy = 0
+  let dw = 0
+  let dh = 0
+  let sx = 0
+  let sy = 0
+  let sw = 0
+  let sh = 0
+  let scale
+  let { focusPoint } = options
 
   const actualSize = {
     width: image.getWidth(),
     height: image.getHeight()
-  };
+  }
 
-  scale = Math.max(width / actualSize.width, height / actualSize.height) || 1;
-  scale = parseFloat(scale.toFixed(4), 10);
+  scale = Math.max(width / actualSize.width, height / actualSize.height) || 1
+  scale = parseFloat(scale.toFixed(4), 10)
 
   const scaledSize = {
     width: actualSize.width * scale,
     height: actualSize.height * scale
-  };
+  }
 
   if (focusPoint) {
     // Since image hints are relative to image "original" dimensions (original != actual),
     // use the original size for focal point cropping.
     if (options.originalHeight) {
-      focusPoint.x *= actualSize.height / options.originalHeight;
-      focusPoint.y *= actualSize.height / options.originalHeight;
+      focusPoint.x *= actualSize.height / options.originalHeight
+      focusPoint.y *= actualSize.height / options.originalHeight
     }
   } else {
     // Default focal point to [0.5, 0.5]
     focusPoint = {
       x: actualSize.width * 0.5,
       y: actualSize.height * 0.5
-    };
+    }
   }
 
   // Clip the image to rectangle (sx, sy, sw, sh).
@@ -71,24 +71,24 @@ function drawImage(ctx, image, x, y, width, height, options) {
     Math.round(
       clamp(width * 0.5 - focusPoint.x * scale, width - scaledSize.width, 0)
     ) *
-    (-1 / scale);
+    (-1 / scale)
   sy =
     Math.round(
       clamp(height * 0.5 - focusPoint.y * scale, height - scaledSize.height, 0)
     ) *
-    (-1 / scale);
-  sw = Math.round(actualSize.width - sx * 2);
-  sh = Math.round(actualSize.height - sy * 2);
+    (-1 / scale)
+  sw = Math.round(actualSize.width - sx * 2)
+  sh = Math.round(actualSize.height - sy * 2)
 
   // Scale the image to dimensions (dw, dh).
-  dw = Math.round(width);
-  dh = Math.round(height);
+  dw = Math.round(width)
+  dh = Math.round(height)
 
   // Draw the image on the canvas at coordinates (dx, dy).
-  dx = Math.round(x);
-  dy = Math.round(y);
+  dx = Math.round(x)
+  dy = Math.round(y)
 
-  ctx.drawImage(image.getRawImage(), sx, sy, sw, sh, dx, dy, dw, dh);
+  ctx.drawImage(image.getRawImage(), sx, sy, sw, sh, dx, dy, dw, dh)
 }
 
 /**
@@ -107,16 +107,16 @@ function drawImage(ctx, image, x, y, width, height, options) {
  *   {String} backgroundColor
  */
 function drawText(ctx, text, x, y, width, height, fontFace, _options) {
-  let currX = x;
-  let currY = y;
-  let currText;
-  const options = _options || {};
+  let currX = x
+  let currY = y
+  let currText
+  const options = _options || {}
 
-  options.fontSize = options.fontSize || 16;
-  options.lineHeight = options.lineHeight || 18;
-  options.textAlign = options.textAlign || "left";
-  options.backgroundColor = options.backgroundColor || "transparent";
-  options.color = options.color || "#000";
+  options.fontSize = options.fontSize || 16
+  options.lineHeight = options.lineHeight || 18
+  options.textAlign = options.textAlign || 'left'
+  options.backgroundColor = options.backgroundColor || 'transparent'
+  options.color = options.color || '#000'
 
   const textMetrics = measureText(
     text,
@@ -124,58 +124,53 @@ function drawText(ctx, text, x, y, width, height, fontFace, _options) {
     fontFace,
     options.fontSize,
     options.lineHeight
-  );
+  )
 
-  ctx.save();
+  ctx.save()
 
   // Draw the background
-  if (options.backgroundColor !== "transparent") {
-    ctx.fillStyle = options.backgroundColor;
-    ctx.fillRect(0, 0, width, height);
+  if (options.backgroundColor !== 'transparent') {
+    ctx.fillStyle = options.backgroundColor
+    ctx.fillRect(0, 0, width, height)
   }
 
-  ctx.fillStyle = options.color;
-  ctx.font =
-    fontFace.attributes.style +
-    " normal " +
-    fontFace.attributes.weight +
-    " " +
-    options.fontSize +
-    "px " +
-    fontFace.family;
+  ctx.fillStyle = options.color
+  ctx.font = `${fontFace.attributes.style} normal ${
+    fontFace.attributes.weight
+  } ${options.fontSize}px ${fontFace.family}`
 
-  textMetrics.lines.forEach(function(line, index) {
-    currText = line.text;
+  textMetrics.lines.forEach((line, index) => {
+    currText = line.text
     currY =
       index === 0
         ? y + options.fontSize
-        : y + options.fontSize + options.lineHeight * index;
+        : y + options.fontSize + options.lineHeight * index
 
     // Account for text-align: left|right|center
     switch (options.textAlign) {
-      case "center":
-        currX = x + width / 2 - line.width / 2;
-        break;
-      case "right":
-        currX = x + width - line.width;
-        break;
+      case 'center':
+        currX = x + width / 2 - line.width / 2
+        break
+      case 'right':
+        currX = x + width - line.width
+        break
       default:
-        currX = x;
+        currX = x
     }
 
     if (
       index < textMetrics.lines.length - 1 &&
       options.fontSize + options.lineHeight * (index + 1) > height
     ) {
-      currText = currText.replace(/,?\s?\w+$/, "…");
+      currText = currText.replace(/,?\s?\w+$/, '…')
     }
 
     if (currY <= height + y) {
-      ctx.fillText(currText, currX, currY);
+      ctx.fillText(currText, currX, currY)
     }
-  });
+  })
 
-  ctx.restore();
+  ctx.restore()
 }
 
 /**
@@ -193,16 +188,16 @@ function drawText(ctx, text, x, y, width, height, fontFace, _options) {
  * @param {Number} height how tall to fill
  */
 function drawGradient(ctx, x1, y1, x2, y2, colorStops, x, y, width, height) {
-  ctx.save();
-  const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+  ctx.save()
+  const grad = ctx.createLinearGradient(x1, y1, x2, y2)
 
-  colorStops.forEach(function(colorStop) {
-    grad.addColorStop(colorStop.position, colorStop.color);
-  });
+  colorStops.forEach(colorStop => {
+    grad.addColorStop(colorStop.position, colorStop.color)
+  })
 
-  ctx.fillStyle = grad;
-  ctx.fillRect(x, y, width, height);
-  ctx.restore();
+  ctx.fillStyle = grad
+  ctx.fillRect(x, y, width, height)
+  ctx.restore()
 }
 
-export { drawImage, drawText, drawGradient };
+export { drawImage, drawText, drawGradient }

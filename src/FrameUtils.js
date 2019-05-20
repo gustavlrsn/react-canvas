@@ -1,8 +1,8 @@
 function Frame(x, y, width, height) {
-  this.x = x;
-  this.y = y;
-  this.width = width;
-  this.height = height;
+  this.x = x
+  this.y = y
+  this.width = width
+  this.height = height
 }
 
 /**
@@ -15,7 +15,7 @@ function Frame(x, y, width, height) {
  * @return {Frame}
  */
 function make(x, y, width, height) {
-  return new Frame(x, y, width, height);
+  return new Frame(x, y, width, height)
 }
 
 /**
@@ -24,7 +24,7 @@ function make(x, y, width, height) {
  * @return {Frame}
  */
 function zero() {
-  return make(0, 0, 0, 0);
+  return make(0, 0, 0, 0)
 }
 
 /**
@@ -34,7 +34,7 @@ function zero() {
  * @return {Frame}
  */
 function clone(frame) {
-  return make(frame.x, frame.y, frame.width, frame.height);
+  return make(frame.x, frame.y, frame.width, frame.height)
 }
 
 /**
@@ -49,25 +49,26 @@ function clone(frame) {
  * @return {Frame}
  */
 function inset(frame, top, right, bottom, left) {
-  const frameCopy = clone(frame);
+  const frameCopy = clone(frame)
 
   // inset(myFrame, 10, 0) => inset(myFrame, 10, 0, 10, 0)
-  if (typeof bottom === "undefined") {
-    bottom = top;
-    left = right;
+  if (typeof bottom === 'undefined') {
+    bottom = top
+    left = right
   }
 
   // inset(myFrame, 10) => inset(myFrame, 10, 10, 10, 10)
-  if (typeof right === "undefined") {
-    right = bottom = left = top;
+  if (typeof right === 'undefined') {
+    // eslint-disable-next-line no-multi-assign
+    right = bottom = left = top
   }
 
-  frameCopy.x += left;
-  frameCopy.y += top;
-  frameCopy.height -= top + bottom;
-  frameCopy.width -= left + right;
+  frameCopy.x += left
+  frameCopy.y += top
+  frameCopy.height -= top + bottom
+  frameCopy.width -= left + right
 
-  return frameCopy;
+  return frameCopy
 }
 
 /**
@@ -78,20 +79,17 @@ function inset(frame, top, right, bottom, left) {
  * @return {Frame}
  */
 function intersection(frame, otherFrame) {
-  const x = Math.max(frame.x, otherFrame.x);
-  const width = Math.min(
-    frame.x + frame.width,
-    otherFrame.x + otherFrame.width
-  );
-  const y = Math.max(frame.y, otherFrame.y);
+  const x = Math.max(frame.x, otherFrame.x)
+  const width = Math.min(frame.x + frame.width, otherFrame.x + otherFrame.width)
+  const y = Math.max(frame.y, otherFrame.y)
   const height = Math.min(
     frame.y + frame.height,
     otherFrame.y + otherFrame.height
-  );
+  )
   if (width >= x && height >= y) {
-    return make(x, y, width - x, height - y);
+    return make(x, y, width - x, height - y)
   }
-  return null;
+  return null
 }
 
 /**
@@ -102,11 +100,11 @@ function intersection(frame, otherFrame) {
  * @return {Frame}
  */
 function union(frame, otherFrame) {
-  const x1 = Math.min(frame.x, otherFrame.x);
-  const x2 = Math.max(frame.x + frame.width, otherFrame.x + otherFrame.width);
-  const y1 = Math.min(frame.y, otherFrame.y);
-  const y2 = Math.max(frame.y + frame.height, otherFrame.y + otherFrame.height);
-  return make(x1, y1, x2 - x1, y2 - y1);
+  const x1 = Math.min(frame.x, otherFrame.x)
+  const x2 = Math.max(frame.x + frame.width, otherFrame.x + otherFrame.width)
+  const y1 = Math.min(frame.y, otherFrame.y)
+  const y2 = Math.max(frame.y + frame.height, otherFrame.y + otherFrame.height)
+  return make(x1, y1, x2 - x1, y2 - y1)
 }
 
 /**
@@ -122,7 +120,7 @@ function intersects(frame, otherFrame) {
     otherFrame.x + otherFrame.width < frame.x ||
     otherFrame.y > frame.y + frame.height ||
     otherFrame.y + otherFrame.height < frame.y
-  );
+  )
 }
 
-export { make, zero, clone, inset, intersection, intersects, union };
+export { make, zero, clone, inset, intersection, intersects, union }

@@ -1,8 +1,5 @@
-const Core = {
-  Layer: "Layer",
-  Group: "Group",
-  Text: "Text",
-  Gradient: "Gradient"
-};
-
-export default Core;
+// These are known component types for CanvasRenderer
+export const Layer = 'Layer'
+export const Group = 'Group'
+export const Text = 'Text'
+export const Gradient = 'Gradient'

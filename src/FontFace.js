@@ -1,18 +1,19 @@
-import MultiKeyCache from "multi-key-cache";
-const _fontFaces = new MultiKeyCache();
+import MultiKeyCache from 'multi-key-cache'
+
+const _fontFaces = new MultiKeyCache()
 
 /**
  * @internal
  */
 function getCacheKey(family, url, attributes) {
-  const cacheKey = [family, url];
+  const cacheKey = [family, url]
 
   for (const entry of Object.entries(attributes)) {
-    cacheKey.push(entry[0]);
-    cacheKey.push(entry[1]);
+    cacheKey.push(entry[0])
+    cacheKey.push(entry[1])
   }
 
-  return cacheKey;
+  return cacheKey
 }
 
 /**
@@ -22,25 +23,25 @@ function getCacheKey(family, url, attributes) {
  * @return {Object}
  */
 function FontFace(family, url, attributes) {
-  let fontFace;
+  let fontFace
 
-  attributes = attributes || {};
-  attributes.style = attributes.style || "normal";
-  attributes.weight = attributes.weight || 400;
+  attributes = attributes || {}
+  attributes.style = attributes.style || 'normal'
+  attributes.weight = attributes.weight || 400
 
-  const cacheKey = getCacheKey(family, url, attributes);
-  fontFace = _fontFaces.get(cacheKey);
+  const cacheKey = getCacheKey(family, url, attributes)
+  fontFace = _fontFaces.get(cacheKey)
 
   if (!fontFace) {
-    fontFace = {};
-    fontFace.id = JSON.stringify(cacheKey);
-    fontFace.family = family;
-    fontFace.url = url;
-    fontFace.attributes = attributes;
-    _fontFaces.set(cacheKey, fontFace);
+    fontFace = {}
+    fontFace.id = JSON.stringify(cacheKey)
+    fontFace.family = family
+    fontFace.url = url
+    fontFace.attributes = attributes
+    _fontFaces.set(cacheKey, fontFace)
   }
 
-  return fontFace;
+  return fontFace
 }
 
 /**
@@ -49,8 +50,8 @@ function FontFace(family, url, attributes) {
  * @param {Number} fontWeight
  * @return {FontFace}
  */
-FontFace.Default = function(fontWeight) {
-  return FontFace("sans-serif", null, { weight: fontWeight });
-};
+FontFace.Default = fontWeight => {
+  return FontFace('sans-serif', null, { weight: fontWeight })
+}
 
-export default FontFace;
+export default FontFace
