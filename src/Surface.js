@@ -103,11 +103,14 @@ class Surface extends React.Component {
   getLayer = () => this.node
 
   getContext = () => {
-    return this.canvas.getContext('2d')
+    return this.canvas?.getContext('2d')
   }
 
   scale = () => {
-    this.getContext().scale(this.props.scale, this.props.scale)
+    const ctx = this.getContext()
+    if (ctx) {
+      ctx.scale(this.props.scale, this.props.scale)
+    }
   }
 
   batchedTick = () => {
@@ -137,7 +140,10 @@ class Surface extends React.Component {
   }
 
   clear = () => {
-    this.getContext().clearRect(0, 0, this.props.width, this.props.height)
+    const ctx = this.getContext()
+    if (ctx) {
+      ctx.clearRect(0, 0, this.props.width, this.props.height)
+    }
   }
 
   draw = () => {
@@ -145,7 +151,9 @@ class Surface extends React.Component {
       if (this.props.enableCSSLayout) {
         layoutNode(this.node)
       }
-      drawRenderLayer(this.getContext(), this.node)
+
+      const ctx = this.getContext()
+      if (ctx) drawRenderLayer(ctx, this.node)
     }
   }
 
