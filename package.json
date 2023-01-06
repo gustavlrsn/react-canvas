@@ -13,8 +13,8 @@
   },
   "scripts": {
     "build": "rimraf dist && babel src --out-dir dist",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
+    "storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 6006",
+    "build-storybook": "NODE_OPTIONS=--openssl-legacy-provider build-storybook",
     "prepare": "yarn build",
     "prettier": "prettier {src,stories}/**/* --write",
     "lint": "eslint 'src/**/*' 'stories/**/*'"
