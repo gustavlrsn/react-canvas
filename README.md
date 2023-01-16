@@ -2,6 +2,8 @@
 
 `react-canvas` fork which supports React 18.2.0 using custom fiber renderer.
 
+Check out other branches which might support other React versions (for example branch `react-17` should work with React 17.0.2)
+
 Previous work / forks:
 
 - [Flipboard/react-canvas](https://github.com/Flipboard/react-canvas)
