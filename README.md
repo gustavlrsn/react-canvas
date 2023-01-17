@@ -2,7 +2,9 @@
 
 `react-canvas` fork which supports React 18.2.0 using custom fiber renderer.
 
-Check out other branches which might support other React versions (for example branch `react-17` should work with React 17.0.2)
+Check out other branches which might support other React versions, for example branches:
+- `react-17` should work with React 17.0.2
+- `react-16` should work with React 16.14.0
 
 Previous work / forks:
 
@@ -84,7 +86,7 @@ React Canvas provides a set of standard React components that abstract the under
 
 React Canvas components support the same event model as normal React components. However, not all event types are currently supported.
 
-For a full list of supported events see [EventTypes](lib/EventTypes.js).
+For a full list of supported events see [EventTypes](src/EventTypes.js).
 
 ## Building Components
 
@@ -147,7 +149,7 @@ There is experimental support for using [css-layout](https://github.com/facebook
 
 Future versions may not support css-layout out of the box. The performance implications need to be investigated before baking this in as a core layout principle.
 
-See the [css-layout example](examples/css-layout).
+See the [css-layout example](stories/CSS.jsx).
 
 ## Running the examples (storybook)
 

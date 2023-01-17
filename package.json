@@ -1,6 +1,6 @@
 {
   "name": "react-canvas",
-  "version": "1.8.0",
+  "version": "1.8.0-react18",
   "description": "High performance <canvas> rendering for React components for React 18",
   "main": "dist/index.js",
   "files": [
@@ -30,6 +30,7 @@
   ],
   "contributors": [
     "Antonín Kříž (https://www.antoninkriz.eu)",
+    "Abhishek Hingnikar <djdark88.7@gmail.com>",
     "Jakub Kottnauer <jk@jakubkottnauer.com>",
     "Tomáš Vojtášek <tomas.vojtasek@quantlane.com>",
     "Vita Smid <hi@vitasmid.com>",
