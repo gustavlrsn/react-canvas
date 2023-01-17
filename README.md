@@ -3,6 +3,7 @@
 `react-canvas` fork which supports React 18.2.0 using custom fiber renderer.
 
 Check out other branches which might support other React versions, for example branches:
+- `master` should work with React 18.2.0
 - `react-17` should work with React 17.0.2
 - `react-16` should work with React 16.14.0
 
@@ -13,6 +14,7 @@ Previous work / forks:
 - [CSBerger/react-canvas](https://github.com/CSberger/react-canvas)
 - [vojty/react-canvas](https://github.com/vojty/react-canvas)
 - [qntln/react-canvas](https://github.com/qntln/react-canvas)
+- [darkyen/react-canvas](https://github.com/darkyen/react-canvas)
 
 # Original repo's README
 
